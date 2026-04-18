@@ -13,7 +13,7 @@ description: Single entry for Xiaohongshu (小红书) "职场英语" short dialo
 
 ## Goal
 
-Produce **non-duplicate** workplace-English learning content for **小红书**, as **short dialogues** in workplace app templates (email / Slack / Feishu IM), then **write Markdown** under `output/<runId>/`. Finish with **AI review**; on fail, restart from `resume_from` only.
+Produce **non-duplicate** workplace-English learning content for **小红书**, as **short dialogues** in workplace app templates (email / Slack / Feishu IM), then **write Markdown** under `output/<runId>/`, **render fixed-layout HTML + PNG screenshots**, finish with **AI text review**; on fail, restart from `resume_from` only.
 
 ## Run id and state
 
@@ -56,15 +56,17 @@ Produce **non-duplicate** workplace-English learning content for **小红书**, 
 
 1. Read `dialogue.md`, `topic.md`, `knowledge.md`.
 2. `read_file` `/skills/xhs-workplace-english/templates/post_skeleton.md` and `slides_skeleton.md`.
-3. Write `output/<runId>/post.md` and `slides.md` (5–8 `## Card n` sections); optional `【配图建议】` per card, no real image generation.
-4. Update `state.json`: `stage: "assets"`, `assets_summary` lists paths.
+3. Write `output/<runId>/post.md` and `slides.md` (**5–8** sections `## Card n — title` in `slides.md`, body under each header).
+4. Call tool **`xhs_assets_render`** with `{ "runId": "<runId>" }` (optional `"viewport": "1080x1920"`). This writes `html/*.html`, `screenshots/*.png`, and `render_report.json` using fixed HTML/CSS templates (no LLM review of pixels).
+5. If `render_report.json` reports `"status": "error"`, fix `post.md`/`slides.md` or environment (e.g. run `npx playwright install chromium`), then call **`xhs_assets_render`** again.
+6. Update `state.json`: `stage: "assets"`, `assets_summary` lists `post.md`, `slides.md`, `html/`, `screenshots/`, `render_report.json`.
 
 ---
 
-## Stage E — review
+## Stage E — review (text only)
 
-1. Read `post.md`, `slides.md`; skim `dialogue.md`, `topic.md`.
-2. Checklist: 职场英语贴合; English 正确; 小红书短平快; 风险（医疗/投资/歧视/侵权等）; 与 memory 不实质重复。
+1. Read `post.md`, `slides.md`; skim `dialogue.md`, `topic.md`. **Do not** review PNG/HTML layout as creative output — templates are fixed; `render_report.json` is technical only (read it **only** if assets step failed and you need the error summary).
+2. Checklist: 职场英语贴合; English 正确; 小红书短平快; 风险（医疗/投资/歧视/侵权等）; 与 memory 不实质重复.
 3. Write/append `output/<runId>/review.json` as one JSON object:
 
 ```json
