@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * Generate HTML from post.md + slides.md (Markdown → HTML via marked), screenshot with Playwright, write render_report.json.
+ * Generate HTML from post.md + slides.md (Markdown → HTML via marked), pick per-card HTML shells under assets/scripts/templates/cards/, screenshot with Playwright, write render_report.json.
  * Strips skeleton instruction labels (e.g. **标题：**、**开头钩子**) and 【配图建议】lines — they are author hints, not final copy.
  *
  * CLI:
@@ -16,6 +16,19 @@ marked.use({
   gfm: true,
   breaks: true,
 });
+
+/**
+ * One HTML shell per slides_skeleton archetype (Cards 1–6).
+ * Card 7+ cycles the same six layouts: `(cardIndex - 1) % 6`.
+ */
+const CARD_TEMPLATE_FILES = [
+  "cards/card-01-cover.html",
+  "cards/card-02-scene.html",
+  "cards/card-03-dialogue.html",
+  "cards/card-04-tips.html",
+  "cards/card-05-recap.html",
+  "cards/card-06-cta.html",
+];
 
 function parseArgs(argv) {
   /** @type {Record<string, string | boolean>} */
@@ -165,8 +178,8 @@ async function main() {
     "skills",
     "xhs-workplace-english",
     "assets",
+    "scripts",
     "templates",
-    "html",
   );
 
   const postMdPath = path.join(outDir, "post.md");
@@ -176,16 +189,21 @@ async function main() {
     fs.mkdirSync(htmlDir, { recursive: true });
     fs.mkdirSync(shotDir, { recursive: true });
 
-    for (const p of ["styles.css", "slide_card.html", "post_page.html"]) {
+    for (const p of ["styles.css", "post_page.html"]) {
       if (!fs.existsSync(path.join(tmplDir, p))) {
         throw new Error(`Missing template file: ${path.join(tmplDir, p)}`);
       }
     }
+    for (const rel of CARD_TEMPLATE_FILES) {
+      const abs = path.join(tmplDir, rel);
+      if (!fs.existsSync(abs)) {
+        throw new Error(`Missing slide card template: ${abs}`);
+      }
+    }
 
     const styles = fs.readFileSync(path.join(tmplDir, "styles.css"), "utf8");
-    const slideShell = fs.readFileSync(
-      path.join(tmplDir, "slide_card.html"),
-      "utf8",
+    const cardShells = CARD_TEMPLATE_FILES.map((rel) =>
+      fs.readFileSync(path.join(tmplDir, rel), "utf8"),
     );
     const postShell = fs.readFileSync(
       path.join(tmplDir, "post_page.html"),
@@ -233,6 +251,8 @@ async function main() {
       const bodyMd = sanitizeSlideBody(card.body);
       const bodyHtml = renderMarkdown(bodyMd);
       const titleEsc = escapeHtml(card.title);
+      const shellIndex = (card.index - 1) % CARD_TEMPLATE_FILES.length;
+      const slideShell = cardShells[shellIndex];
       const html = slideShell
         .replaceAll("__XHS_STYLES__", styles)
         .replaceAll("__XHS_TITLE_ESC__", titleEsc)

@@ -17,6 +17,70 @@ body {
   color: #f8fafc;
 }
 
+/**
+ * Slide cards (assets/scripts/templates/cards/*.html): one palette + base canvas.
+ * Per-card HTML only adjusts layout; colors reference these variables.
+ */
+body.xhs-card {
+  --xhs-bg-0: #0c1018;
+  --xhs-bg-1: #121a28;
+  --xhs-bg-2: #0e141c;
+  --xhs-spot-cool: rgba(56, 189, 248, 0.075);
+  --xhs-spot-warm: rgba(201, 166, 107, 0.065);
+  --xhs-accent: #38bdf8;
+  --xhs-accent-2: #818cf8;
+  --xhs-accent-soft: #7dd3fc;
+  --xhs-kicker: #c9a66b;
+  --xhs-text: #e2e8f0;
+  --xhs-text-bright: #f1f5f9;
+  --xhs-text-muted: #94a3b8;
+  --xhs-surface: rgba(30, 41, 59, 0.88);
+  --xhs-surface-dim: rgba(15, 23, 42, 0.72);
+  --xhs-border: rgba(100, 116, 139, 0.45);
+  --xhs-border-accent: rgba(56, 189, 248, 0.38);
+  --xhs-link: #7dd3fc;
+  --xhs-code-bg: rgba(15, 23, 42, 0.65);
+  --xhs-code-fg: #bae6fd;
+  --xhs-shadow: rgba(0, 0, 0, 0.38);
+
+  background: radial-gradient(
+      100% 72% at 10% 0%,
+      var(--xhs-spot-warm),
+      transparent 52%
+    ),
+    radial-gradient(88% 58% at 92% 8%, var(--xhs-spot-cool), transparent 48%),
+    linear-gradient(168deg, var(--xhs-bg-0) 0%, var(--xhs-bg-1) 48%, var(--xhs-bg-2) 100%);
+  color: var(--xhs-text);
+  font-family: "Noto Serif SC", "Songti SC", Georgia, "PingFang SC", serif;
+}
+
+body.xhs-card .md-rendered {
+  color: var(--xhs-text);
+}
+
+body.xhs-card .md-rendered h1,
+body.xhs-card .md-rendered h2,
+body.xhs-card .md-rendered h3 {
+  color: var(--xhs-text-muted);
+}
+
+body.xhs-card .md-rendered strong {
+  color: var(--xhs-text-bright);
+}
+
+body.xhs-card .md-rendered a {
+  color: var(--xhs-link);
+}
+
+body.xhs-card .md-rendered code {
+  background: var(--xhs-code-bg);
+  color: var(--xhs-code-fg);
+}
+
+body.xhs-card .md-rendered hr {
+  border-top-color: var(--xhs-border);
+}
+
 main {
   width: 100%;
   min-height: 1920px;

@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=1080" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Noto+Serif+SC:wght@500;700&family=Outfit:wght@500;600&display=swap"
+      rel="stylesheet"
+    />
+    <title>__XHS_TITLE_ESC__</title>
+    <style>
+      __XHS_STYLES__
+      /* Card 3 — 对话: monospace + thread blocks */
+      body.xhs-card.card-dialogue {
+        font-family: "IBM Plex Mono", ui-monospace, monospace;
+      }
+      .card-dialogue main {
+        gap: 20px;
+      }
+      .card-dialogue .thread-cap {
+        font-size: 20px;
+        color: var(--xhs-text-muted);
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        margin: 0 0 8px;
+      }
+      .card-dialogue .md-rendered {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+      }
+      /* Odd paragraphs = first speaker (e.g. Alex); even = reply (e.g. Sarah). */
+      .card-dialogue .md-rendered p {
+        position: relative;
+        margin: 0 0 14px;
+        max-width: 94%;
+        padding: 18px 22px 18px 26px;
+        border-radius: 14px 14px 14px 4px;
+        background: var(--xhs-surface);
+        border: 1px solid var(--xhs-border);
+        font-size: 26px;
+        line-height: 1.45;
+        color: var(--xhs-text);
+        box-shadow: 0 12px 40px var(--xhs-shadow);
+        align-self: flex-start;
+      }
+      .card-dialogue .md-rendered p:nth-child(even) {
+        align-self: flex-end;
+        padding: 18px 26px 18px 22px;
+        border-radius: 14px 14px 4px 14px;
+        background: var(--xhs-surface-dim);
+        border-color: var(--xhs-border-accent);
+      }
+      .card-dialogue .md-rendered p::before {
+        content: "";
+        position: absolute;
+        left: 10px;
+        top: 14px;
+        bottom: 14px;
+        width: 3px;
+        border-radius: 2px;
+        background: linear-gradient(
+          180deg,
+          var(--xhs-accent),
+          var(--xhs-accent-2)
+        );
+      }
+      .card-dialogue .md-rendered p:nth-child(even)::before {
+        left: auto;
+        right: 10px;
+        background: linear-gradient(
+          180deg,
+          var(--xhs-kicker),
+          var(--xhs-accent)
+        );
+      }
+    </style>
+  </head>
+  <body class="xhs-card card-dialogue">
+    <main>
+      <p class="thread-cap">__XHS_TITLE_ESC__ · thread</p>
+      <div class="md-rendered">__XHS_BODY_HTML__</div>
+    </main>
+  </body>
+</html>

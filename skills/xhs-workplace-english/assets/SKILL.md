@@ -23,7 +23,7 @@ Read `output/<runId>/dialogue.md`, `topic.md`, `knowledge.md` when authoring cop
 
 1. Write `output/<runId>/post.md` and `slides.md` (**5–8** `## Card n — title` sections; body under each header).
 2. Call tool **`xhs_assets_render`** with `{ "runId": "<same runId>", "viewport": "1080x1920" }` (viewport optional).
-3. The tool runs `skills/xhs-workplace-english/assets/scripts/render-assets.mjs` with CLI flags; you do **not** run `node` yourself. It **renders Markdown to HTML** (via `marked`), strips skeleton **instruction labels** (e.g. `**标题：**`, `**开头钩子…**`, `**本期学到：**` on posts; `【配图建议】` and `大标题：` / `副标：` list hints on slides), then screenshots. HTML shells and CSS live under **`assets/templates/html/`**.
+3. The tool runs `skills/xhs-workplace-english/assets/scripts/render-assets.mjs` with CLI flags; you do **not** run `node` yourself. It **renders Markdown to HTML** (via `marked`), strips skeleton **instruction labels** (e.g. `**标题：**`, `**开头钩子…**`, `**本期学到：**` on posts; `【配图建议】` and `大标题：` / `副标：` list hints on slides), then screenshots. Shared CSS is **`assets/scripts/templates/styles.css`**. Each slide uses a dedicated shell under **`assets/scripts/templates/cards/`** (`card-01-cover.html` … `card-06-cta.html`, aligned with `slides_skeleton.md`). If `slides.md` has more than six `## Card` sections, the renderer **cycles** those six shells in order: Card 7 uses the Card‑1 layout, and so on.
 
 ### CLI (for humans / CI; same flags the tool passes)
 

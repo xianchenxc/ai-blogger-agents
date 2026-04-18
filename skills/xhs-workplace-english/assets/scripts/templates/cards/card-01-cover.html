@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=1080" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Noto+Serif+SC:wght@500;700&family=Outfit:wght@500;700&display=swap"
+      rel="stylesheet"
+    />
+    <title>__XHS_TITLE_ESC__</title>
+    <style>
+      __XHS_STYLES__
+      /* Card 1 — 封面: hero layout (palette from styles.css body.xhs-card) */
+      .card-cover .grain {
+        pointer-events: none;
+        position: fixed;
+        inset: 0;
+        opacity: 0.07;
+        mix-blend-mode: overlay;
+        background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+      }
+      .card-cover main {
+        position: relative;
+        z-index: 1;
+        justify-content: center;
+        gap: 40px;
+      }
+      .card-cover .kicker {
+        margin: 0;
+        font-family: Outfit, system-ui, sans-serif;
+        font-size: 26px;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: var(--xhs-kicker);
+      }
+      .card-cover .kicker span {
+        color: var(--xhs-text-bright);
+        font-weight: 600;
+        letter-spacing: 0.04em;
+        text-transform: none;
+      }
+      .card-cover .hero-md {
+        text-align: center;
+      }
+      .card-cover .hero-md p:first-child {
+        font-size: 56px;
+        line-height: 1.18;
+        font-weight: 700;
+        color: var(--xhs-text-bright);
+        margin-bottom: 0.35em;
+      }
+      .card-cover .hero-md li {
+        font-size: 36px;
+        color: var(--xhs-text);
+      }
+    </style>
+  </head>
+  <body class="xhs-card card-cover">
+    <div class="grain" aria-hidden="true"></div>
+    <main>
+      <p class="kicker">小红书 · <span>__XHS_TITLE_ESC__</span></p>
+      <div class="md-rendered hero-md">__XHS_BODY_HTML__</div>
+    </main>
+  </body>
+</html>
