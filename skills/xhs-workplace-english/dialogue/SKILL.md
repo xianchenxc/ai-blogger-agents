@@ -13,9 +13,9 @@ Read `output/<runId>/knowledge.md` and `topic.md`.
 
 Pick **one** family unless user asked otherwise:
 
-1. Email thread — read `/skills/xhs-workplace-english/templates/email_thread.md`
-2. Slack — read `/skills/xhs-workplace-english/templates/slack_thread.md`
-3. Feishu IM — read `/skills/xhs-workplace-english/templates/feishu_im.md`
+1. Email thread — read `/skills/xhs-workplace-english/dialogue/reference/email_thread.md`
+2. Slack — read `/skills/xhs-workplace-english/dialogue/reference/slack_thread.md`
+3. Feishu IM — read `/skills/xhs-workplace-english/dialogue/reference/feishu_im.md`
 
 ## Output
 
