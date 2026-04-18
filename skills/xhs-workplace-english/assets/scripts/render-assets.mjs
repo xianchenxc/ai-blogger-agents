@@ -98,6 +98,7 @@ async function main() {
     packageRoot,
     "skills",
     "xhs-workplace-english",
+    "assets",
     "templates",
     "html",
   );

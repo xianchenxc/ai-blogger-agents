@@ -23,7 +23,7 @@ Read `output/<runId>/dialogue.md`, `topic.md`, `knowledge.md` when authoring cop
 
 1. Write `output/<runId>/post.md` and `slides.md` (**5–8** `## Card n — title` sections; body under each header).
 2. Call tool **`xhs_assets_render`** with `{ "runId": "<same runId>", "viewport": "1080x1920" }` (viewport optional).
-3. The tool runs `skills/xhs-workplace-english/assets/scripts/render-assets.mjs` with CLI flags; you do **not** run `node` yourself.
+3. The tool runs `skills/xhs-workplace-english/assets/scripts/render-assets.mjs` with CLI flags; you do **not** run `node` yourself. HTML shells and CSS live under **`assets/templates/html/`** (this skill only).
 
 ### CLI (for humans / CI; same flags the tool passes)
 
