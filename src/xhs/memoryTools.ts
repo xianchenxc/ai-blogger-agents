@@ -1,36 +1,13 @@
 import fs from "node:fs";
-import path from "node:path";
 import { tool } from "langchain";
 import { z } from "zod";
+import {
+  ensureDirForFile,
+  parseJsonl,
+  type GenerationRecord,
+} from "../memory/generationsJsonl.js";
 
-const GenerationRecordSchema = z.object({
-  fingerprint: z.string(),
-  title: z.string(),
-  tags: z.array(z.string()).optional(),
-  paths: z.array(z.string()).optional(),
-  createdAt: z.string(),
-});
-
-export type GenerationRecord = z.infer<typeof GenerationRecordSchema>;
-
-function ensureDirForFile(filePath: string) {
-  fs.mkdirSync(path.dirname(filePath), { recursive: true });
-}
-
-function parseJsonl(content: string): GenerationRecord[] {
-  const out: GenerationRecord[] = [];
-  for (const line of content.split("\n")) {
-    const t = line.trim();
-    if (!t) continue;
-    try {
-      const row = GenerationRecordSchema.safeParse(JSON.parse(t));
-      if (row.success) out.push(row.data);
-    } catch {
-      // skip bad lines
-    }
-  }
-  return out;
-}
+export type { GenerationRecord } from "../memory/generationsJsonl.js";
 
 export function createMemoryTools(memoryPath: string) {
   const memory_search_recent = tool(
