@@ -1,6 +1,6 @@
 ---
 name: knowledge
-description: Use after a topic exists to derive 3–7 concise workplace-English knowledge points (phrases, patterns, tone) for 小红书 learners.
+description: Legacy reference only — knowledge rules are inlined in orchestration/SKILL.md; do not read this file in normal runs.
 ---
 
 # knowledge

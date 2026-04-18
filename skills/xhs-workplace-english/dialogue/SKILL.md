@@ -1,6 +1,6 @@
 ---
 name: dialogue
-description: Use to turn knowledge points into a very short workplace dialogue for 小红书, using one template family (email thread, Slack, or Feishu IM). Reads template files under skills assets.
+description: Legacy reference only — dialogue rules are inlined in orchestration/SKILL.md; do not read this file in normal runs.
 ---
 
 # dialogue

@@ -1,6 +1,6 @@
 ---
 name: assets
-description: Use to convert dialogue into local Markdown "graphic-text" assets (post + slides) for Xiaohongshu workplace English; uses skeleton templates, no pixel design required.
+description: Legacy reference only — assets rules are inlined in orchestration/SKILL.md; do not read this file in normal runs.
 ---
 
 # assets

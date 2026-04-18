@@ -1,6 +1,6 @@
 ---
 name: topic
-description: Use when selecting a Xiaohongshu title/angle for "职场英语" (workplace English) carousel content. Enforces de-duplication via memory_search_recent.
+description: Legacy reference only — full topic rules live in orchestration/SKILL.md; do not read this file in normal runs.
 ---
 
 # topic

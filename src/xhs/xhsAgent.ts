@@ -15,6 +15,15 @@ export type XhsInvokeInput =
 let cachedAgent: ReturnType<typeof createXhsAgent> | null = null;
 let cachedKey = "";
 
+/** Default LangGraph recursion limit; override per-invoke via `recursionLimit` or env `XHS_RECURSION_LIMIT`. */
+export function defaultXhsRecursionLimit(): number {
+  const raw = process.env.XHS_RECURSION_LIMIT;
+  if (raw == null || raw.trim() === "") return 160;
+  const n = Number.parseInt(raw, 10);
+  if (!Number.isFinite(n)) return 160;
+  return Math.min(500, Math.max(20, n));
+}
+
 function cacheKey(opts: CreateXhsAgentOptions) {
   return JSON.stringify({
     rootDir: opts.rootDir ?? process.env.XHS_BACKEND_ROOT ?? "",
@@ -58,7 +67,8 @@ export const xhsAgent = {
       { messages },
       {
         ...runnableConfig,
-        recursionLimit: runnableConfig.recursionLimit ?? 80,
+        recursionLimit:
+          runnableConfig.recursionLimit ?? defaultXhsRecursionLimit(),
         configurable: {
           ...runnableConfig.configurable,
           thread_id: threadId,

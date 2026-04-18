@@ -1,6 +1,6 @@
 ---
 name: review
-description: Use for final QA of Xiaohongshu workplace English materials (English quality, platform tone, policy-ish risks, dedup). Produces pass/fail, issues, and resume_from. On pass, instruct calling memory_record_generation.
+description: Legacy reference only — review rules are inlined in orchestration/SKILL.md; do not read this file in normal runs.
 ---
 
 # review
