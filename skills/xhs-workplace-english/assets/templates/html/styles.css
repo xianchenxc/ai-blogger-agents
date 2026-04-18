@@ -23,7 +23,7 @@ main {
   padding: 72px 64px 96px;
   display: flex;
   flex-direction: column;
-  gap: 32px;
+  gap: 28px;
 }
 
 .card-label {
@@ -35,28 +35,80 @@ main {
   font-weight: 600;
 }
 
-h1 {
+.xhs-card-heading {
   margin: 0;
-  font-size: 56px;
+  font-size: 52px;
   line-height: 1.2;
   font-weight: 700;
   color: #f1f5f9;
 }
 
-.body,
-.content {
-  font-size: 36px;
+/* Rendered Markdown (marked output) */
+.md-rendered {
+  font-size: 32px;
   line-height: 1.55;
   color: #e2e8f0;
-  white-space: pre-wrap;
+  white-space: normal;
   word-break: break-word;
 }
 
-.content {
-  font-size: 32px;
+.slide-md.md-rendered {
+  font-size: 34px;
 }
 
-.english {
+.md-rendered h1 {
+  margin: 0 0 0.5em;
+  font-size: 48px;
+  line-height: 1.2;
+  font-weight: 700;
+  color: #f1f5f9;
+}
+
+.md-rendered h2,
+.md-rendered h3 {
+  margin: 0.85em 0 0.45em;
+  font-size: 38px;
+  font-weight: 600;
+  color: #cbd5e1;
+}
+
+.md-rendered p {
+  margin: 0 0 0.65em;
+}
+
+.md-rendered ul,
+.md-rendered ol {
+  margin: 0.4em 0 0.8em;
+  padding-left: 1.15em;
+}
+
+.md-rendered li {
+  margin: 0.3em 0;
+}
+
+.md-rendered strong {
+  color: #f8fafc;
+  font-weight: 600;
+}
+
+.md-rendered a {
   color: #7dd3fc;
-  font-weight: 500;
+}
+
+.md-rendered code {
+  font-size: 0.9em;
+  padding: 0.1em 0.25em;
+  border-radius: 4px;
+  background: rgba(15, 23, 42, 0.65);
+  color: #bae6fd;
+}
+
+.md-rendered hr {
+  border: 0;
+  border-top: 1px solid rgba(148, 163, 184, 0.35);
+  margin: 1em 0;
+}
+
+.post-md.md-rendered {
+  font-size: 30px;
 }

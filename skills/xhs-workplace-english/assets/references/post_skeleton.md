@@ -1,5 +1,7 @@
 # 小红书笔记 · 职场英语
 
+> **Render note:** Bold labels like `**标题：**` / `**开头钩子…**` are **removed** when building PNGs (guides only); fill the values after each label.
+
 **标题：** <中文标题，含1个英文关键词>
 
 **开头钩子（1–2句）：**  

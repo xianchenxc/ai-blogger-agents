@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 /**
- * Generate HTML from post.md + slides.md, screenshot each page with Playwright, write render_report.json.
+ * Generate HTML from post.md + slides.md (Markdown → HTML via marked), screenshot with Playwright, write render_report.json.
+ * Strips skeleton instruction labels (e.g. **标题：**、**开头钩子**) and 【配图建议】lines — they are author hints, not final copy.
  *
  * CLI:
  *   node render-assets.mjs --runId=<id> --backendRoot=<abs> --packageRoot=<abs> [--viewport=1080x1920] [--deviceScaleFactor=1]
@@ -9,6 +10,12 @@
 import fs from "node:fs";
 import path from "node:path";
 import { pathToFileURL } from "node:url";
+import { marked } from "marked";
+
+marked.use({
+  gfm: true,
+  breaks: true,
+});
 
 function parseArgs(argv) {
   /** @type {Record<string, string | boolean>} */
@@ -28,6 +35,65 @@ function escapeHtml(s) {
     .replace(/</g, "&lt;")
     .replace(/>/g, "&gt;")
     .replace(/"/g, "&quot;");
+}
+
+/**
+ * Remove pack-level title line from slides.md (not shown on cards).
+ * @param {string} md
+ */
+function stripSlidesPreamble(md) {
+  return md.replace(/^#\s+Slides[^\n]*\s*\n?/im, "").trim();
+}
+
+/**
+ * Strip skeleton field labels from post.md; first line becomes markdown H1.
+ * Labels match skills/xhs-workplace-english/assets/references/post_skeleton.md
+ * @param {string} md
+ */
+function sanitizePostMarkdown(md) {
+  let s = md.replace(/^#\s*小红书笔记[^\n]*\s*\n?/m, "").trim();
+  s = s.replace(/^>\s*\*\*Render note:\*\*[^\n]*\n?/gm, "");
+  s = s.replace(/\*\*标题：\*\*\s*/g, "# ");
+  s = s.replace(/\*\*开头钩子[^*]*\*\*\s*/g, "");
+  s = s.replace(/\*\*本期学到：\*\*\s*/g, "");
+  s = s.replace(/\*\*对话速览：\*\*\s*/g, "");
+  s = s.replace(/\*\*收藏向 CTA：\*\*\s*/g, "");
+  s = s.replace(/\n{3,}/g, "\n\n").trim();
+  return s;
+}
+
+/**
+ * Remove 【配图建议】lines and list prefixes like "大标题："/"副标：" (skeleton hints).
+ * @param {string} body
+ */
+function sanitizeSlideBody(body) {
+  const lines = body.split(/\r?\n/);
+  const out = [];
+  for (const line of lines) {
+    const t = line.trim();
+    if (/^【配图建议】/.test(t)) continue;
+    let m = line.match(/^(\s*-\s*)大标题[：:]\s*(.*)$/);
+    if (m) {
+      out.push(`${m[1]}${m[2]}`);
+      continue;
+    }
+    m = line.match(/^(\s*-\s*)副标[：:]\s*(.*)$/);
+    if (m) {
+      out.push(`${m[1]}${m[2]}`);
+      continue;
+    }
+    out.push(line);
+  }
+  return out.join("\n").trim();
+}
+
+/**
+ * @param {string} md
+ */
+function renderMarkdown(md) {
+  const src = (md || "").trim();
+  if (!src) return "<p></p>";
+  return marked.parse(src);
 }
 
 /**
@@ -133,8 +199,11 @@ async function main() {
       throw new Error(`Missing slides.md: ${slidesMdPath}`);
     }
 
-    const postMd = fs.readFileSync(postMdPath, "utf8");
-    const slidesMd = fs.readFileSync(slidesMdPath, "utf8");
+    const postMdRaw = fs.readFileSync(postMdPath, "utf8");
+    const slidesMdRaw = fs.readFileSync(slidesMdPath, "utf8");
+
+    const postMd = sanitizePostMarkdown(postMdRaw);
+    const slidesMd = stripSlidesPreamble(slidesMdRaw);
 
     const cards = parseSlideCards(slidesMd);
     if (cards.length === 0) {
@@ -146,9 +215,10 @@ async function main() {
     /** @type {{ rel: string; abs: string; shot: string }[]} */
     const htmlFiles = [];
 
+    const postHtmlInner = renderMarkdown(postMd);
     const postHtml = postShell
       .replaceAll("__XHS_STYLES__", styles)
-      .replaceAll("__XHS_CONTENT__", escapeHtml(postMd));
+      .replaceAll("__XHS_CONTENT_HTML__", postHtmlInner);
     const postHtmlPath = path.join(htmlDir, "post.html");
     fs.writeFileSync(postHtmlPath, postHtml, "utf8");
     htmlFiles.push({
@@ -160,10 +230,13 @@ async function main() {
     for (const card of cards) {
       const n = String(card.index).padStart(2, "0");
       const fn = `slide-${n}.html`;
+      const bodyMd = sanitizeSlideBody(card.body);
+      const bodyHtml = renderMarkdown(bodyMd);
+      const titleEsc = escapeHtml(card.title);
       const html = slideShell
         .replaceAll("__XHS_STYLES__", styles)
-        .replaceAll("__XHS_TITLE__", escapeHtml(card.title))
-        .replaceAll("__XHS_BODY__", escapeHtml(card.body));
+        .replaceAll("__XHS_TITLE_ESC__", titleEsc)
+        .replaceAll("__XHS_BODY_HTML__", bodyHtml);
       const abs = path.join(htmlDir, fn);
       fs.writeFileSync(abs, html, "utf8");
       htmlFiles.push({

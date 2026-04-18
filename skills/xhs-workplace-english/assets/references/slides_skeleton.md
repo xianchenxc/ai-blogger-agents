@@ -1,5 +1,7 @@
 # Slides skeleton (Markdown cards for 小红书图文)
 
+> **Render note:** The first `#` line, `【配图建议】` lines, and list prefixes `大标题：` / `副标：` are stripped for PNGs.
+
 ## Card 1 — 封面
 
 - 大标题：<中文>

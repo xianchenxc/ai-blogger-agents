@@ -23,7 +23,7 @@ Read `output/<runId>/dialogue.md`, `topic.md`, `knowledge.md` when authoring cop
 
 1. Write `output/<runId>/post.md` and `slides.md` (**5–8** `## Card n — title` sections; body under each header).
 2. Call tool **`xhs_assets_render`** with `{ "runId": "<same runId>", "viewport": "1080x1920" }` (viewport optional).
-3. The tool runs `skills/xhs-workplace-english/assets/scripts/render-assets.mjs` with CLI flags; you do **not** run `node` yourself. HTML shells and CSS live under **`assets/templates/html/`** (this skill only).
+3. The tool runs `skills/xhs-workplace-english/assets/scripts/render-assets.mjs` with CLI flags; you do **not** run `node` yourself. It **renders Markdown to HTML** (via `marked`), strips skeleton **instruction labels** (e.g. `**标题：**`, `**开头钩子…**`, `**本期学到：**` on posts; `【配图建议】` and `大标题：` / `副标：` list hints on slides), then screenshots. HTML shells and CSS live under **`assets/templates/html/`**.
 
 ### CLI (for humans / CI; same flags the tool passes)
 
