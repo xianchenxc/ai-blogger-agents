@@ -16,8 +16,8 @@ Read `output/<runId>/dialogue.md`, `topic.md`, `knowledge.md` when authoring cop
 
 ## Markdown skeletons (virtual paths)
 
-- `/skills/xhs-workplace-english/assets/reference/post_skeleton.md`
-- `/skills/xhs-workplace-english/assets/reference/slides_skeleton.md`
+- `/skills/xhs-workplace-english/assets/references/post_skeleton.md`
+- `/skills/xhs-workplace-english/assets/references/slides_skeleton.md`
 
 ## Stage D — copy then render
 

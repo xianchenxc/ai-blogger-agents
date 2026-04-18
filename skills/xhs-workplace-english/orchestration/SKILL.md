@@ -8,7 +8,7 @@ description: Single entry for Xiaohongshu (小红书) "职场英语" short dialo
 ## Single entry (critical)
 
 - For a **normal full run**, **`read_file` exactly once**: `/skills/xhs-workplace-english/orchestration/SKILL.md` (this file). **Do not** `read_file` `topic/knowledge/dialogue/assets/review/SKILL.md` unless the user explicitly asks to debug that stage.
-- **Reference templates**: only `read_file` the **one** dialogue file under `dialogue/reference/` (email OR Slack OR Feishu) plus **`assets/reference/post_skeleton.md`** and **`assets/reference/slides_skeleton.md`** in Stage D — **three `read_file` max** for these refs per run.
+- **Reference templates**: only `read_file` the **one** dialogue file under `dialogue/references/` (email OR Slack OR Feishu) plus **`assets/references/post_skeleton.md`** and **`assets/references/slides_skeleton.md`** in Stage D — **three `read_file` max** for these refs per run.
 - **Memory**: call `memory_search_recent` **at most twice** per full run — once before topic, optionally once during review if duplicate risk.
 
 ## Goal
@@ -43,10 +43,10 @@ Produce **non-duplicate** workplace-English learning content for **小红书**, 
 ## Stage C — dialogue
 
 1. Read `topic.md` + `knowledge.md`.
-2. Pick **one** template family; `read_file` **only that** file under `dialogue/reference/`:
-   - Email: `/skills/xhs-workplace-english/dialogue/reference/email_thread.md`
-   - Slack: `/skills/xhs-workplace-english/dialogue/reference/slack_thread.md`
-   - Feishu: `/skills/xhs-workplace-english/dialogue/reference/feishu_im.md`
+2. Pick **one** template family; `read_file` **only that** file under `dialogue/references/`:
+   - Email: `/skills/xhs-workplace-english/dialogue/references/email_thread.md`
+   - Slack: `/skills/xhs-workplace-english/dialogue/references/slack_thread.md`
+   - Feishu: `/skills/xhs-workplace-english/dialogue/references/feishu_im.md`
 3. Write `output/<runId>/dialogue.md`: state template used; **6–14** short lines; embed **2–4** knowledge items; 小红书口语感.
 4. Update `state.json`: `stage: "dialogue"`.
 
@@ -55,7 +55,7 @@ Produce **non-duplicate** workplace-English learning content for **小红书**, 
 ## Stage D — assets
 
 1. Read `dialogue.md`, `topic.md`, `knowledge.md`.
-2. `read_file` `/skills/xhs-workplace-english/assets/reference/post_skeleton.md` and `/skills/xhs-workplace-english/assets/reference/slides_skeleton.md`.
+2. `read_file` `/skills/xhs-workplace-english/assets/references/post_skeleton.md` and `/skills/xhs-workplace-english/assets/references/slides_skeleton.md`.
 3. Write `output/<runId>/post.md` and `slides.md` (**5–8** sections `## Card n — title` in `slides.md`, body under each header).
 4. Call tool **`xhs_assets_render`** with `{ "runId": "<runId>" }` (optional `"viewport": "1080x1920"`). This writes `html/*.html`, `screenshots/*.png`, and `render_report.json` using fixed HTML/CSS templates (no LLM review of pixels).
 5. If `render_report.json` reports `"status": "error"`, fix `post.md`/`slides.md` or environment (e.g. run `npx playwright install chromium`), then call **`xhs_assets_render`** again.
