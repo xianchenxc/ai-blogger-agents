@@ -7,7 +7,22 @@ import {
   type RunFileEntry,
 } from "../api.js";
 
-function AuthPng({ runId, name }: { runId: string; name: string }) {
+type PreviewImage = {
+  name: string;
+  src: string;
+};
+
+function AuthPng({
+  runId,
+  name,
+  onOpenPreview,
+  onLoaded,
+}: {
+  runId: string;
+  name: string;
+  onOpenPreview: (image: PreviewImage) => void;
+  onLoaded: (image: PreviewImage) => void;
+}) {
   const [src, setSrc] = useState<string | null>(null);
   const [err, setErr] = useState<string | null>(null);
 
@@ -19,7 +34,10 @@ function AuthPng({ runId, name }: { runId: string; name: string }) {
         const blob = await fetchAssetBlob(runId, name);
         const url = URL.createObjectURL(blob);
         revoked = url;
-        if (!cancelled) setSrc(url);
+        if (!cancelled) {
+          setSrc(url);
+          onLoaded({ name, src: url });
+        }
       } catch (e) {
         if (!cancelled) setErr(e instanceof Error ? e.message : String(e));
       }
@@ -46,7 +64,13 @@ function AuthPng({ runId, name }: { runId: string; name: string }) {
   }
   return (
     <figure className="shot">
-      <img src={src} alt={name} />
+      <button
+        type="button"
+        className="shot-trigger"
+        onClick={() => onOpenPreview({ name, src })}
+      >
+        <img src={src} alt={name} />
+      </button>
       <figcaption>{name}</figcaption>
     </figure>
   );
@@ -61,6 +85,8 @@ export default function RunDetailPage() {
   const [updatedAt, setUpdatedAt] = useState<string>("");
   const [topic, setTopic] = useState<string>("");
   const [error, setError] = useState<string | null>(null);
+  const [preview, setPreview] = useState<PreviewImage | null>(null);
+  const [imageSrcByName, setImageSrcByName] = useState<Record<string, string>>({});
 
   const pngs = useMemo(
     () =>
@@ -89,6 +115,44 @@ export default function RunDetailPage() {
     void loadMeta();
   }, [runId]);
 
+  useEffect(() => {
+    setImageSrcByName({});
+    setPreview(null);
+  }, [runId]);
+
+  useEffect(() => {
+    if (!preview) return;
+    const onKeyDown = (evt: KeyboardEvent) => {
+      if (evt.key === "Escape") {
+        setPreview(null);
+        return;
+      }
+      const currentIndex = pngs.findIndex((name) => name === preview.name);
+      if (currentIndex < 0 || pngs.length <= 1) return;
+      if (evt.key === "ArrowRight") {
+        const nextIndex = (currentIndex + 1) % pngs.length;
+        const nextName = pngs[nextIndex];
+        const nextSrc = imageSrcByName[nextName];
+        if (nextSrc) {
+          evt.preventDefault();
+          setPreview({ name: nextName, src: nextSrc });
+        }
+        return;
+      }
+      if (evt.key === "ArrowLeft") {
+        const prevIndex = (currentIndex - 1 + pngs.length) % pngs.length;
+        const prevName = pngs[prevIndex];
+        const prevSrc = imageSrcByName[prevName];
+        if (prevSrc) {
+          evt.preventDefault();
+          setPreview({ name: prevName, src: prevSrc });
+        }
+      }
+    };
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [imageSrcByName, pngs, preview]);
+
   async function remove() {
     if (!window.confirm(`确认删除 ${runId}？不可恢复。`)) return;
     try {
@@ -112,6 +176,17 @@ export default function RunDetailPage() {
       : typeof state?.updatedAt === "string"
         ? state.updatedAt
         : updatedAt || "-";
+  const previewIndex = preview ? pngs.findIndex((name) => name === preview.name) : -1;
+  const canNavigate = previewIndex >= 0 && pngs.length > 1;
+
+  function goPreview(offset: -1 | 1): void {
+    if (!preview || !canNavigate) return;
+    const nextIndex = (previewIndex + offset + pngs.length) % pngs.length;
+    const nextName = pngs[nextIndex];
+    const nextSrc = imageSrcByName[nextName];
+    if (!nextSrc) return;
+    setPreview({ name: nextName, src: nextSrc });
+  }
 
   return (
     <div className="page">
@@ -143,11 +218,66 @@ export default function RunDetailPage() {
         <h2 className="section-title">截图预览</h2>
         <div className="gallery">
           {pngs.map((name) => (
-            <AuthPng key={name} runId={runId} name={name} />
+            <AuthPng
+              key={name}
+              runId={runId}
+              name={name}
+              onOpenPreview={(image) => setPreview(image)}
+              onLoaded={(image) => {
+                setImageSrcByName((prev) => {
+                  if (prev[image.name] === image.src) return prev;
+                  return { ...prev, [image.name]: image.src };
+                });
+              }}
+            />
           ))}
         </div>
         {pngs.length === 0 ? <p className="muted">无 png 资源</p> : null}
       </section>
+      {preview ? (
+        <div
+          className="image-preview-backdrop"
+          role="presentation"
+          onClick={() => setPreview(null)}
+        >
+          <div
+            className="image-preview-dialog"
+            role="dialog"
+            aria-modal="true"
+            aria-label={preview.name}
+            onClick={(evt) => evt.stopPropagation()}
+          >
+            <button
+              type="button"
+              className="image-preview-nav image-preview-nav-prev"
+              onClick={() => goPreview(-1)}
+              aria-label="上一张"
+              disabled={!canNavigate}
+            >
+              ‹
+            </button>
+            <button
+              type="button"
+              className="image-preview-nav image-preview-nav-next"
+              onClick={() => goPreview(1)}
+              aria-label="下一张"
+              disabled={!canNavigate}
+            >
+              ›
+            </button>
+            <button
+              type="button"
+              className="image-preview-close"
+              onClick={() => setPreview(null)}
+              aria-label="关闭预览"
+            >
+              ×
+            </button>
+            <img src={preview.src} alt={preview.name} />
+            <p className="image-preview-caption">{preview.name}</p>
+          </div>
+        </div>
+      ) : null}
     </div>
   );
 }
