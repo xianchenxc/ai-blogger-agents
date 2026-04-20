@@ -41,7 +41,6 @@ export default function RunsPage() {
               <th>runId</th>
               <th>阶段</th>
               <th>主题</th>
-              <th>review</th>
               <th>更新时间</th>
               <th />
             </tr>
@@ -56,7 +55,6 @@ export default function RunsPage() {
                 <td>
                   {String(row.state?.topic ?? row.memory?.title ?? "")}
                 </td>
-                <td>{String(row.state?.review ?? "")}</td>
                 <td className="nowrap">{row.updatedAt}</td>
                 <td>
                   <Link className="link" to={`/runs/${encodeURIComponent(row.runId)}`}>

@@ -2,52 +2,185 @@
 <html lang="zh-CN">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=1080" />
+    <meta name="viewport" content="width=540" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Noto+Serif+SC:wght@600;700&family=Outfit:wght@600;700&display=swap"
+      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Noto+Sans+SC:wght@500;700&family=Noto+Serif+SC:wght@500;700&family=Outfit:wght@500;600;700&display=swap"
       rel="stylesheet"
     />
     <title>__XHS_TITLE_ESC__</title>
     <style>
       __XHS_STYLES__
-      /* Card 6 — CTA: ribbon + closing line */
-      .card-cta main {
-        justify-content: flex-end;
-        padding-bottom: 120px;
-        gap: 32px;
+      /* Card 6 — CTA: gradient frame, illustration, account placeholders + slogan from slides */
+      html {
+        background: #e8ecff;
       }
-      .card-cta .ribbon {
-        align-self: stretch;
-        padding: 18px 28px;
-        border-radius: 12px;
-        background: var(--xhs-surface-dim);
-        border: 1px solid var(--xhs-border-accent);
-        font-family: Outfit, system-ui, sans-serif;
-        font-size: 26px;
-        letter-spacing: 0.08em;
-        color: var(--xhs-accent-soft);
-        text-align: center;
-      }
-      .card-cta .md-rendered {
-        font-size: 40px;
-        font-weight: 700;
-        color: var(--xhs-text-bright);
-        text-align: center;
-      }
-      .card-cta .md-rendered p {
+
+      body.xhs-card.card-cta {
+        --cta-purple: #6d28d9;
+        --cta-purple-mid: #7c3aed;
+        --cta-border: #c4b5fd;
+        --cta-watermark: rgba(109, 40, 217, 0.36);
+
         margin: 0;
+        border-radius: 20px;
+        border: 2px dashed var(--cta-border);
+        background: linear-gradient(
+          180deg,
+          #fdf2f8 0%,
+          #f5f3ff 44%,
+          #e0f2fe 100%
+        );
+        color: var(--cta-purple-mid);
+        font-family: Outfit, "Noto Sans SC", "PingFang SC", system-ui,
+          sans-serif;
+        box-shadow: none;
       }
-      .card-cta .md-rendered a {
-        color: var(--xhs-link);
+
+      body.xhs-card.card-cta main.cta-main {
+        position: relative;
+        z-index: 1;
+        width: 100%;
+        min-height: 960px;
+        margin: 0;
+        padding: 48px 36px 96px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        box-sizing: border-box;
+        gap: 0;
+        text-align: center;
+      }
+
+      .card-cta .cta-illus {
+        flex-shrink: 0;
+        width: 132px;
+        height: auto;
+        margin-bottom: 28px;
+      }
+
+      .card-cta .cta-illus svg {
+        display: block;
+        width: 100%;
+        height: auto;
+      }
+
+      .card-cta .cta-actions {
+        margin: 0 0 14px;
+        font-size: 15px;
+        font-weight: 600;
+        letter-spacing: 0.12em;
+        color: var(--cta-purple-mid);
+      }
+
+      .card-cta .cta-account-line {
+        margin: 0 0 18px;
+        font-size: 22px;
+        font-weight: 700;
+        line-height: 1.35;
+        color: var(--cta-purple);
+      }
+
+      .card-cta .md-rendered.cta-slogan {
+        width: 100%;
+        max-width: 460px;
+        font-size: 17px;
+        font-weight: 500;
+        line-height: 1.55;
+        color: var(--cta-purple-mid);
+      }
+
+      .card-cta .md-rendered.cta-slogan p {
+        margin: 0 0 0.55em;
+      }
+
+      .card-cta .md-rendered.cta-slogan p:last-child {
+        margin-bottom: 0;
+      }
+
+      .card-cta .md-rendered.cta-slogan strong {
+        color: var(--cta-purple);
+        font-weight: 700;
+      }
+
+      .card-cta .md-rendered.cta-slogan a {
+        color: #5b21b6;
+      }
+
+      .card-cta .cta-watermark {
+        position: absolute;
+        right: 28px;
+        bottom: 40px;
+        margin: 0;
+        font-size: 13px;
+        font-weight: 500;
+        letter-spacing: 0.02em;
+        color: var(--cta-watermark);
+        text-align: right;
+        max-width: 70%;
+        word-break: break-all;
       }
     </style>
   </head>
   <body class="xhs-card card-cta">
-    <main>
-      <div class="ribbon">__XHS_TITLE_ESC__</div>
-      <div class="md-rendered">__XHS_BODY_HTML__</div>
+    <main class="cta-main">
+      <div class="cta-illus" aria-hidden="true">
+        <svg
+          viewBox="0 0 200 220"
+          xmlns="http://www.w3.org/2000/svg"
+          role="img"
+        >
+          <!-- Minimal flat figure + heart (CTA visual anchor) -->
+          <ellipse
+            cx="100"
+            cy="204"
+            rx="52"
+            ry="9"
+            fill="#c7d2fe"
+            opacity="0.5"
+          />
+          <path
+            d="M76 172 L124 172 L118 198 L82 198 Z"
+            fill="#1e1b4b"
+          />
+          <rect
+            x="76"
+            y="120"
+            width="48"
+            height="56"
+            rx="8"
+            fill="#f8fafc"
+          />
+          <rect x="92" y="108" width="16" height="16" rx="2" fill="#fcd9bd" />
+          <circle cx="100" cy="86" r="27" fill="#fcd9bd" />
+          <path
+            d="M73 78 C73 52 92 44 100 48 C108 44 127 52 127 78 C127 88 120 96 112 98 C108 82 92 82 88 98 C80 96 73 88 73 78 Z"
+            fill="#0f172a"
+          />
+          <path
+            d="M76 132 L58 156"
+            stroke="#f1f5f9"
+            stroke-width="10"
+            stroke-linecap="round"
+          />
+          <path
+            d="M124 132 L142 156"
+            stroke="#f1f5f9"
+            stroke-width="10"
+            stroke-linecap="round"
+          />
+          <path
+            d="M100 154 C86 140 62 128 62 148 C62 166 100 198 100 198 C100 198 138 166 138 148 C138 128 114 140 100 154 Z"
+            fill="#2563eb"
+          />
+        </svg>
+      </div>
+      <p class="cta-actions">点赞 · 收藏 · 关注</p>
+      <p class="cta-account-line">「__XHS_ACCOUNT_NAME_ESC__」</p>
+      <div class="md-rendered cta-slogan">__XHS_BODY_HTML__</div>
+      <p class="cta-watermark">__XHS_ACCOUNT_WATERMARK_ESC__</p>
     </main>
   </body>
 </html>

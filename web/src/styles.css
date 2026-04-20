@@ -114,11 +114,11 @@ samp {
   flex-direction: column;
 }
 
-.header {
+.app-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: var(--space-4);
+  min-height: 56px;
   padding: var(--space-3) var(--space-5);
   background: var(--bg-elevated);
   border-bottom: 1px solid var(--border);
@@ -130,6 +130,24 @@ samp {
   flex-direction: column;
   gap: 0.1rem;
   min-width: 0;
+}
+
+.app-body {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  align-items: stretch;
+}
+
+.sidebar {
+  width: 210px;
+  flex: 0 0 210px;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding: var(--space-4);
+  background: var(--bg-elevated);
+  border-right: 1px solid var(--border);
 }
 
 .brand {
@@ -178,11 +196,77 @@ samp {
   box-shadow: 0 0 0 1px var(--border);
 }
 
+.nav.nav-vertical {
+  flex-direction: column;
+  align-items: stretch;
+  gap: var(--space-1);
+}
+
+.nav.nav-vertical a {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: var(--space-2);
+  border: 1px solid transparent;
+  position: relative;
+  padding: var(--space-2) var(--space-3);
+}
+
+.nav-title {
+  font-size: 0.82rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: inherit;
+}
+
+.nav-icon {
+  width: 1.1rem;
+  text-align: center;
+  font-size: 0.85rem;
+  color: var(--fg-faint);
+  line-height: 1;
+  flex: 0 0 1.1rem;
+}
+
+.nav.nav-vertical a:hover {
+  border-color: var(--border);
+}
+
+.nav.nav-vertical a.active {
+  background: var(--bg-elevated);
+  border-color: var(--border);
+  box-shadow: none;
+}
+
+.nav.nav-vertical a.active::before {
+  content: "";
+  position: absolute;
+  left: -5px;
+  top: 7px;
+  bottom: 7px;
+  width: 2px;
+  border-radius: 999px;
+  background: var(--fg);
+}
+
+.nav.nav-vertical a.active .nav-icon {
+  color: var(--fg);
+}
+
 .main {
   flex: 1;
+  min-width: 0;
   padding: var(--space-5) var(--space-5) var(--space-6);
-  max-width: var(--max-content);
+}
+
+.content-pane {
+  max-width: none;
   width: 100%;
+}
+
+.content-pane > * {
+  max-width: var(--max-content);
   margin: 0 auto;
 }
 
@@ -538,4 +622,30 @@ samp {
 
 .filelist code {
   color: var(--fg);
+}
+
+@media (max-width: 860px) {
+  .app-body {
+    flex-direction: column;
+  }
+
+  .sidebar {
+    width: 100%;
+    flex: initial;
+    border-right: none;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .nav.nav-vertical {
+    flex-direction: row;
+  }
+
+  .nav.nav-vertical a {
+    width: auto;
+    align-items: center;
+  }
+
+  .nav.nav-vertical a.active::before {
+    display: none;
+  }
 }

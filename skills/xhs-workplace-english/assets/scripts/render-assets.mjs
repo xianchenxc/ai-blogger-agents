@@ -1,10 +1,15 @@
 #!/usr/bin/env node
 /**
- * Generate HTML from post.md + slides.md (Markdown → HTML via marked), pick per-card HTML shells under assets/scripts/templates/cards/, screenshot with Playwright, write render_report.json.
- * Strips skeleton instruction labels (e.g. **标题：**、**开头钩子**) and 【配图建议】lines — they are author hints, not final copy.
+ * Generate HTML from slides.md (Markdown → HTML via marked), pick per-card HTML shells under assets/scripts/templates/cards/, screenshot with Playwright, write render_report.json.
+ * post.html/post.png are rendered from Card 1 content (same visual shell as slide-01), so no separate post template/post markdown parsing.
+ * Strips slide skeleton hints like 【配图建议】 and list prefixes 大标题：/副标：.
  *
  * CLI:
- *   node render-assets.mjs --runId=<id> --backendRoot=<abs> --packageRoot=<abs> [--viewport=1080x1920] [--deviceScaleFactor=1]
+ *   node render-assets.mjs --runId=<id> --backendRoot=<abs> --packageRoot=<abs> --xhsAccount=@handle [--viewport=540x720] [--deviceScaleFactor=2]
+ *
+ * Default viewport is 540×720 with deviceScaleFactor 2 so PNGs are 2× raster density (e.g. 1080px-wide bitmap for a 540px-wide CSS canvas; fullPage height follows template min-height).
+ *
+ * Required --xhsAccount= sets the Xiaohongshu handle for __XHS_ACCOUNT_WATERMARK_ESC__ (HTML-escaped). __XHS_ACCOUNT_NAME_ESC__ is the same string with leading @ stripped (display name in 「」 on CTA).
  */
 
 import fs from "node:fs";
@@ -56,23 +61,6 @@ function escapeHtml(s) {
  */
 function stripSlidesPreamble(md) {
   return md.replace(/^#\s+Slides[^\n]*\s*\n?/im, "").trim();
-}
-
-/**
- * Strip skeleton field labels from post.md; first line becomes markdown H1.
- * Labels match skills/xhs-workplace-english/assets/references/post_skeleton.md
- * @param {string} md
- */
-function sanitizePostMarkdown(md) {
-  let s = md.replace(/^#\s*小红书笔记[^\n]*\s*\n?/m, "").trim();
-  s = s.replace(/^>\s*\*\*Render note:\*\*[^\n]*\n?/gm, "");
-  s = s.replace(/\*\*标题：\*\*\s*/g, "# ");
-  s = s.replace(/\*\*开头钩子[^*]*\*\*\s*/g, "");
-  s = s.replace(/\*\*本期学到：\*\*\s*/g, "");
-  s = s.replace(/\*\*对话速览：\*\*\s*/g, "");
-  s = s.replace(/\*\*收藏向 CTA：\*\*\s*/g, "");
-  s = s.replace(/\n{3,}/g, "\n\n").trim();
-  return s;
 }
 
 /**
@@ -145,26 +133,36 @@ async function main() {
   const runId = /** @type {string} */ (args.runId);
   const backendRoot = /** @type {string} */ (args.backendRoot);
   const packageRoot = /** @type {string} */ (args.packageRoot || backendRoot);
-  const viewportSpec = /** @type {string} */ (args.viewport || "1080x1920");
+  const viewportSpec = /** @type {string} */ (args.viewport || "540x720");
   const [vwRaw, vhRaw] = viewportSpec.split("x");
-  const vw = Number.parseInt(vwRaw, 10) || 1080;
-  const vh = Number.parseInt(vhRaw, 10) || 1920;
-  const dsf = Number.parseFloat(String(args.deviceScaleFactor || "1")) || 1;
+  const vw = Number.parseInt(vwRaw, 10) || 540;
+  const vh = Number.parseInt(vhRaw, 10) || 720;
+  const dsf = Number.parseFloat(String(args.deviceScaleFactor ?? "2")) || 2;
 
-  /** @type {{ status: string; runId: string | null; startedAt: string; finishedAt: string | null; viewport: { width: number; height: number }; pages: object[]; errors: string[] }} */
+  const xhsAccountArg =
+    typeof args.xhsAccount === "string" ? String(args.xhsAccount).trim() : "";
+  const xhsAccountWatermark = xhsAccountArg;
+  const watermarkEsc = escapeHtml(xhsAccountWatermark);
+  const accountDisplayName = xhsAccountWatermark.replace(/^@+/, "").trim();
+  const accountNameEsc = escapeHtml(
+    accountDisplayName || xhsAccountWatermark,
+  );
+
+  /** @type {{ status: string; runId: string | null; startedAt: string; finishedAt: string | null; viewport: { width: number; height: number }; deviceScaleFactor: number; pages: object[]; errors: string[] }} */
   const report = {
     status: "ok",
     runId: runId ?? null,
     startedAt: new Date().toISOString(),
     finishedAt: null,
     viewport: { width: vw, height: vh },
+    deviceScaleFactor: dsf,
     pages: [],
     errors: [],
   };
 
-  if (!runId || !backendRoot) {
+  if (!runId || !backendRoot || !xhsAccountWatermark) {
     report.status = "error";
-    report.errors.push("Missing --runId or --backendRoot");
+    report.errors.push("Missing --runId or --backendRoot or --xhsAccount");
     report.finishedAt = new Date().toISOString();
     console.log(JSON.stringify({ ok: false, report }));
     process.exit(1);
@@ -182,14 +180,13 @@ async function main() {
     "templates",
   );
 
-  const postMdPath = path.join(outDir, "post.md");
   const slidesMdPath = path.join(outDir, "slides.md");
 
   try {
     fs.mkdirSync(htmlDir, { recursive: true });
     fs.mkdirSync(shotDir, { recursive: true });
 
-    for (const p of ["styles.css", "post_page.html"]) {
+    for (const p of ["styles.css"]) {
       if (!fs.existsSync(path.join(tmplDir, p))) {
         throw new Error(`Missing template file: ${path.join(tmplDir, p)}`);
       }
@@ -205,22 +202,11 @@ async function main() {
     const cardShells = CARD_TEMPLATE_FILES.map((rel) =>
       fs.readFileSync(path.join(tmplDir, rel), "utf8"),
     );
-    const postShell = fs.readFileSync(
-      path.join(tmplDir, "post_page.html"),
-      "utf8",
-    );
-
-    if (!fs.existsSync(postMdPath)) {
-      throw new Error(`Missing post.md: ${postMdPath}`);
-    }
     if (!fs.existsSync(slidesMdPath)) {
       throw new Error(`Missing slides.md: ${slidesMdPath}`);
     }
 
-    const postMdRaw = fs.readFileSync(postMdPath, "utf8");
     const slidesMdRaw = fs.readFileSync(slidesMdPath, "utf8");
-
-    const postMd = sanitizePostMarkdown(postMdRaw);
     const slidesMd = stripSlidesPreamble(slidesMdRaw);
 
     const cards = parseSlideCards(slidesMd);
@@ -233,10 +219,18 @@ async function main() {
     /** @type {{ rel: string; abs: string; shot: string }[]} */
     const htmlFiles = [];
 
-    const postHtmlInner = renderMarkdown(postMd);
+    const postCard = cards[0];
+    const postBodyMd = sanitizeSlideBody(postCard.body);
+    const postBodyHtml = renderMarkdown(postBodyMd);
+    const postTitleEsc = escapeHtml(postCard.title);
+    const postShellIndex = (postCard.index - 1) % CARD_TEMPLATE_FILES.length;
+    const postShell = cardShells[postShellIndex];
     const postHtml = postShell
       .replaceAll("__XHS_STYLES__", styles)
-      .replaceAll("__XHS_CONTENT_HTML__", postHtmlInner);
+      .replaceAll("__XHS_TITLE_ESC__", postTitleEsc)
+      .replaceAll("__XHS_BODY_HTML__", postBodyHtml)
+      .replaceAll("__XHS_ACCOUNT_WATERMARK_ESC__", "@" + watermarkEsc)
+      .replaceAll("__XHS_ACCOUNT_NAME_ESC__", accountNameEsc);
     const postHtmlPath = path.join(htmlDir, "post.html");
     fs.writeFileSync(postHtmlPath, postHtml, "utf8");
     htmlFiles.push({
@@ -246,6 +240,8 @@ async function main() {
     });
 
     for (const card of cards) {
+      // Card 1 is already exported as post.html/post.png; skip duplicate slide-01 outputs.
+      if (card.index === postCard.index) continue;
       const n = String(card.index).padStart(2, "0");
       const fn = `slide-${n}.html`;
       const bodyMd = sanitizeSlideBody(card.body);
@@ -256,7 +252,9 @@ async function main() {
       const html = slideShell
         .replaceAll("__XHS_STYLES__", styles)
         .replaceAll("__XHS_TITLE_ESC__", titleEsc)
-        .replaceAll("__XHS_BODY_HTML__", bodyHtml);
+        .replaceAll("__XHS_BODY_HTML__", bodyHtml)
+        .replaceAll("__XHS_ACCOUNT_WATERMARK_ESC__", "@" + watermarkEsc)
+        .replaceAll("__XHS_ACCOUNT_NAME_ESC__", accountNameEsc);
       const abs = path.join(htmlDir, fn);
       fs.writeFileSync(abs, html, "utf8");
       htmlFiles.push({

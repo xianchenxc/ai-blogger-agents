@@ -18,6 +18,7 @@ import {
   isAssetBasename,
 } from "../history/runs.js";
 import type { XhsMessage } from "../../agents/index.js";
+import { readUserSettings, writeUserSettings } from "../user/settings.js";
 
 function p(v: string | string[] | undefined): string {
   if (v == null) return "";
@@ -42,6 +43,10 @@ const PostInvocationBodySchema = z
     message: "Provide non-empty `input` or `messages`",
   });
 
+const PutUserSettingsBodySchema = z.object({
+  xhsAccountName: z.string().max(80),
+});
+
 export function createV1Router(): Router {
   const r = Router();
 
@@ -49,7 +54,7 @@ export function createV1Router(): Router {
     res.json({ ok: true });
   });
 
-  r.post("/invocations", (req: Request, res: Response) => {
+  r.post("/invocations", async (req: Request, res: Response) => {
     const log = createLogger(req.correlationId);
     const parsed = PostInvocationBodySchema.safeParse(req.body);
     if (!parsed.success) {
@@ -76,9 +81,15 @@ export function createV1Router(): Router {
     }
     let id: string;
     try {
+      const userSettings = await readUserSettings();
       id = enqueueInvocation(invokeInput, {
         threadId,
         agentId,
+        agentRuntimeContext: {
+          user: {
+            xhsAccountName: userSettings.xhsAccountName,
+          },
+        },
       });
     } catch (e) {
       const msg = e instanceof Error ? e.message : String(e);
@@ -104,6 +115,33 @@ export function createV1Router(): Router {
       return;
     }
     res.json(job);
+  });
+
+  r.get("/user-settings", async (_req: Request, res: Response) => {
+    try {
+      const settings = await readUserSettings();
+      res.json(settings);
+    } catch (e) {
+      res.status(500).json({
+        error: e instanceof Error ? e.message : "read_user_settings_failed",
+      });
+    }
+  });
+
+  r.put("/user-settings", async (req: Request, res: Response) => {
+    const body = PutUserSettingsBodySchema.safeParse(req.body);
+    if (!body.success) {
+      res.status(400).json({ error: body.error.flatten() });
+      return;
+    }
+    try {
+      const saved = await writeUserSettings(body.data);
+      res.json(saved);
+    } catch (e) {
+      res.status(500).json({
+        error: e instanceof Error ? e.message : "write_user_settings_failed",
+      });
+    }
   });
 
   r.get("/runs", async (req: Request, res: Response) => {

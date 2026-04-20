@@ -4,18 +4,8 @@ import {
   deleteRun,
   fetchAssetBlob,
   getRun,
-  getRunFileText,
-  putRunFile,
   type RunFileEntry,
 } from "../api.js";
-
-const MD_FILES = [
-  "topic.md",
-  "knowledge.md",
-  "dialogue.md",
-  "post.md",
-  "slides.md",
-];
 
 function AuthPng({ runId, name }: { runId: string; name: string }) {
   const [src, setSrc] = useState<string | null>(null);
@@ -67,11 +57,10 @@ export default function RunDetailPage() {
   const runId = runIdParam ?? "";
   const nav = useNavigate();
   const [files, setFiles] = useState<RunFileEntry[]>([]);
-  const [stateJson, setStateJson] = useState<string>("");
-  const [activeTab, setActiveTab] = useState<string>("state.json");
-  const [editor, setEditor] = useState<string>("");
+  const [state, setState] = useState<Record<string, unknown> | null>(null);
+  const [updatedAt, setUpdatedAt] = useState<string>("");
+  const [topic, setTopic] = useState<string>("");
   const [error, setError] = useState<string | null>(null);
-  const [saving, setSaving] = useState(false);
 
   const pngs = useMemo(
     () =>
@@ -86,22 +75,11 @@ export default function RunDetailPage() {
     try {
       const r = await getRun(runId);
       setFiles(r.files ?? []);
-      setStateJson(JSON.stringify(r.state, null, 2));
-    } catch (e) {
-      setError(e instanceof Error ? e.message : String(e));
-    }
-  }
-
-  async function loadFile(name: string) {
-    setError(null);
-    setActiveTab(name);
-    if (name === "state.json") {
-      setEditor(stateJson);
-      return;
-    }
-    try {
-      const t = await getRunFileText(runId, name);
-      setEditor(t);
+      setState(r.state ?? null);
+      setUpdatedAt(r.updatedAt ?? "");
+      const stateTopic = typeof r.state?.topic === "string" ? r.state.topic : "";
+      const memoryTitle = r.memory?.title ?? "";
+      setTopic(stateTopic || memoryTitle);
     } catch (e) {
       setError(e instanceof Error ? e.message : String(e));
     }
@@ -110,29 +88,6 @@ export default function RunDetailPage() {
   useEffect(() => {
     void loadMeta();
   }, [runId]);
-
-  useEffect(() => {
-    if (activeTab === "state.json") {
-      setEditor(stateJson);
-    }
-  }, [stateJson, activeTab]);
-
-  async function save() {
-    if (!MD_FILES.includes(activeTab)) {
-      setError("仅可保存 .md 文件");
-      return;
-    }
-    setSaving(true);
-    setError(null);
-    try {
-      await putRunFile(runId, activeTab, editor);
-      await loadMeta();
-    } catch (e) {
-      setError(e instanceof Error ? e.message : String(e));
-    } finally {
-      setSaving(false);
-    }
-  }
 
   async function remove() {
     if (!window.confirm(`确认删除 ${runId}？不可恢复。`)) return;
@@ -144,23 +99,43 @@ export default function RunDetailPage() {
     }
   }
 
+  const status = typeof state?.stage === "string" ? state.stage : "-";
+  const createdAt =
+    typeof state?.createdAt === "string"
+      ? state.createdAt
+      : typeof state?.startedAt === "string"
+        ? state.startedAt
+        : "-";
+  const generatedAt =
+    typeof state?.generatedAt === "string"
+      ? state.generatedAt
+      : typeof state?.updatedAt === "string"
+        ? state.updatedAt
+        : updatedAt || "-";
+
   return (
     <div className="page">
       <header className="page-head">
         <div className="row spread">
-          <h1>Run 详情</h1>
           <div className="row">
             <Link className="btn" to="/runs">
-              返回列表
+              ← 返回列表
             </Link>
-            <button type="button" className="btn danger" onClick={() => void remove()}>
-              删除
-            </button>
+            <h1>Run 详情</h1>
           </div>
+          <button type="button" className="btn danger" onClick={() => void remove()}>
+            删除 Run
+          </button>
         </div>
         <p className="meta page-lead">
           <code>{runId}</code>
         </p>
+        <div className="row wrap mt">
+          <p className="meta">创建时间：{createdAt}</p>
+          <p className="meta">生成时间：{generatedAt}</p>
+          <p className="meta">状态：{status}</p>
+        </div>
+        <p className="muted mt">{topic || "暂无 topic 信息"}</p>
       </header>
       {error ? <p className="error">{error}</p> : null}
 
@@ -172,60 +147,6 @@ export default function RunDetailPage() {
           ))}
         </div>
         {pngs.length === 0 ? <p className="muted">无 png 资源</p> : null}
-      </section>
-
-      <section className="card mt">
-        <h2 className="section-title">文本文件</h2>
-        <div className="tabs">
-          <button
-            type="button"
-            className={activeTab === "state.json" ? "tab active" : "tab"}
-            onClick={() => void loadFile("state.json")}
-          >
-            state.json（只读展示）
-          </button>
-          {MD_FILES.map((name) => (
-            <button
-              key={name}
-              type="button"
-              className={activeTab === name ? "tab active" : "tab"}
-              onClick={() => void loadFile(name)}
-            >
-              {name}
-            </button>
-          ))}
-        </div>
-        <textarea
-          className="textarea code"
-          rows={18}
-          value={editor}
-          onChange={(e) => setEditor(e.target.value)}
-          readOnly={activeTab === "state.json"}
-        />
-        {activeTab !== "state.json" ? (
-          <div className="row mt">
-            <button
-              type="button"
-              className="btn primary"
-              disabled={saving}
-              onClick={() => void save()}
-            >
-              {saving ? "保存中…" : "保存"}
-            </button>
-          </div>
-        ) : null}
-      </section>
-
-      <section className="card mt">
-        <h2 className="section-title">目录清单</h2>
-        <ul className="filelist">
-          {files.map((f) => (
-            <li key={f.name}>
-              <code>{f.name}</code>
-              {f.size != null ? <span className="muted"> {f.size} B</span> : null}
-            </li>
-          ))}
-        </ul>
       </section>
     </div>
   );

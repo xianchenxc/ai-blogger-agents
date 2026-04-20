@@ -22,7 +22,10 @@ export function resolvePackageRoot(): string {
  */
 export function createRuntimeContextFromEnv(
   overrides?: Partial<
-    Pick<RuntimeContext, "packageRoot" | "backendRoot" | "memoryFilePath">
+    Pick<
+      RuntimeContext,
+      "packageRoot" | "backendRoot" | "memoryFilePath"
+    >
   >,
 ): RuntimeContext {
   const packageRoot = overrides?.packageRoot ?? resolvePackageRoot();

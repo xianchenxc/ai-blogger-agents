@@ -2,66 +2,199 @@
 <html lang="zh-CN">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=1080" />
+    <meta name="viewport" content="width=540" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Noto+Serif+SC:wght@500;700&family=Outfit:wght@500;700&display=swap"
+      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Noto+Sans+SC:wght@500;700&family=Noto+Serif+SC:wght@500;700&family=Outfit:ital,wght@0,500;0,700;1,500;1,700&display=swap"
       rel="stylesheet"
     />
     <title>__XHS_TITLE_ESC__</title>
     <style>
       __XHS_STYLES__
-      /* Card 1 — 封面: hero layout (palette from styles.css body.xhs-card) */
-      .card-cover .grain {
-        pointer-events: none;
-        position: fixed;
-        inset: 0;
-        opacity: 0.07;
-        mix-blend-mode: overlay;
-        background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+      /* Card 1 — 封面: light gradient canvas, dashed frame, space badge (reference layout) */
+      /* Full document; cover slide is a standalone HTML file per render. */
+      html {
+        background: #e8ecff;
       }
-      .card-cover main {
+
+      body.xhs-card.card-cover {
+        --cover-purple: #6366f1;
+        --cover-purple-deep: #4f46e5;
+        --cover-border: #c7d2fe;
+        --cover-watermark: #a5b4fc;
+
+        margin: 0;
+        border-radius: 20px;
+        border: 2px dashed var(--cover-border);
+        background: linear-gradient(180deg, #fdf2f9 0%, #eef2ff 100%);
+        color: var(--cover-purple-deep);
+        font-family: Outfit, "Noto Sans SC", "PingFang SC", system-ui, sans-serif;
+        box-shadow: none;
+      }
+
+      body.xhs-card.card-cover main.cover-main {
         position: relative;
         z-index: 1;
-        justify-content: center;
-        gap: 40px;
-      }
-      .card-cover .kicker {
+        width: 100%;
+        min-height: 960px;
         margin: 0;
-        font-family: Outfit, system-ui, sans-serif;
-        font-size: 26px;
-        letter-spacing: 0.12em;
-        text-transform: uppercase;
-        color: var(--xhs-kicker);
+        padding: 48px 36px 44px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        box-sizing: border-box;
+        gap: 0;
       }
-      .card-cover .kicker span {
-        color: var(--xhs-text-bright);
-        font-weight: 600;
-        letter-spacing: 0.04em;
-        text-transform: none;
+
+      .card-cover .cover-icon {
+        flex-shrink: 0;
+        width: 110px;
+        height: 110px;
+        margin-bottom: 24px;
       }
-      .card-cover .hero-md {
+
+      .card-cover .cover-icon svg {
+        display: block;
+        width: 100%;
+        height: auto;
+      }
+
+      .card-cover .cover-body {
+        flex: 0 1 auto;
+        width: 100%;
+        max-width: 460px;
         text-align: center;
-      }
-      .card-cover .hero-md p:first-child {
-        font-size: 56px;
-        line-height: 1.18;
+        font-style: italic;
         font-weight: 700;
-        color: var(--xhs-text-bright);
-        margin-bottom: 0.35em;
+        color: var(--cover-purple);
       }
-      .card-cover .hero-md li {
-        font-size: 36px;
-        color: var(--xhs-text);
+
+      .card-cover .cover-body ul,
+      .card-cover .cover-body ol {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+      }
+
+      .card-cover .cover-body li {
+        margin: 0 0 0.38em;
+        font-size: 22px;
+        line-height: 1.28;
+        font-weight: 700;
+        color: var(--cover-purple-deep);
+      }
+
+      .card-cover .cover-body li:first-child {
+        font-size: 29px;
+        margin-bottom: 0.28em;
+        color: var(--cover-purple);
+      }
+
+      .card-cover .cover-body li:nth-child(n + 3) {
+        font-size: 19px;
+        font-weight: 700;
+        color: var(--cover-purple-deep);
+      }
+
+      .card-cover .cover-body p {
+        margin: 0 0 0.45em;
+        font-size: 19px;
+        line-height: 1.32;
+        font-weight: 700;
+        color: var(--cover-purple-deep);
+      }
+
+      .card-cover .cover-body p:first-of-type:not(:only-of-type) {
+        font-size: 29px;
+        color: var(--cover-purple);
+      }
+
+      .card-cover .cover-body strong {
+        color: inherit;
+        font-weight: 800;
+        text-decoration: underline wavy #f59e0b;
+        text-decoration-thickness: 2px;
+        text-underline-offset: 0.14em;
+      }
+
+      .card-cover .cover-body a {
+        color: var(--cover-purple-deep);
+      }
+
+      .card-cover .cover-spacer {
+        display: none;
+      }
+
+      .card-cover .cover-watermark {
+        position: absolute;
+        right: 28px;
+        bottom: 40px;
+        margin: 0;
+        font-family: Outfit, "Noto Sans SC", "PingFang SC", system-ui, sans-serif;
+        font-size: 13px;
+        font-weight: 500;
+        font-style: normal;
+        letter-spacing: 0.02em;
+        color: var(--cover-watermark);
       }
     </style>
   </head>
   <body class="xhs-card card-cover">
-    <div class="grain" aria-hidden="true"></div>
-    <main>
-      <p class="kicker">小红书 · <span>__XHS_TITLE_ESC__</span></p>
-      <div class="md-rendered hero-md">__XHS_BODY_HTML__</div>
+    <main class="cover-main">
+      <div class="cover-icon" aria-hidden="true">
+        <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" role="img">
+          <defs>
+            <linearGradient id="cv-planet" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#8b5cf6" />
+              <stop offset="100%" stop-color="#6d28d9" />
+            </linearGradient>
+          </defs>
+          <circle cx="100" cy="100" r="100" fill="#1e1b4b" />
+          <circle cx="42" cy="48" r="1.8" fill="#f8fafc" opacity="0.95" />
+          <circle cx="156" cy="62" r="1.4" fill="#f8fafc" opacity="0.85" />
+          <circle cx="128" cy="36" r="1.2" fill="#f8fafc" opacity="0.75" />
+          <circle cx="88" cy="58" r="1.1" fill="#f8fafc" opacity="0.7" />
+          <circle cx="152" cy="118" r="22" fill="#e2e8f0" />
+          <ellipse
+            cx="152"
+            cy="118"
+            rx="34"
+            ry="7"
+            fill="none"
+            stroke="#cbd5e1"
+            stroke-width="3"
+          />
+          <circle cx="72" cy="128" r="40" fill="url(#cv-planet)" />
+          <ellipse
+            cx="72"
+            cy="128"
+            rx="58"
+            ry="11"
+            fill="none"
+            stroke="#f1f5f9"
+            stroke-width="4"
+            opacity="0.95"
+          />
+          <path
+            d="M118 52 L132 44 L128 58 L140 56 L122 72 L124 58 Z"
+            fill="#f8fafc"
+          />
+          <path d="M132 44 L128 58 L124 52" fill="#fecaca" />
+          <path
+            d="M118 72 Q108 88 98 108"
+            fill="none"
+            stroke="#fca5a5"
+            stroke-width="5"
+            stroke-linecap="round"
+            opacity="0.9"
+          />
+        </svg>
+      </div>
+      <div class="md-rendered hero-md cover-body">__XHS_BODY_HTML__</div>
+      <div class="cover-spacer" aria-hidden="true"></div>
+      <p class="cover-watermark">__XHS_ACCOUNT_WATERMARK_ESC__</p>
     </main>
   </body>
 </html>

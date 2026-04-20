@@ -2,86 +2,140 @@
 <html lang="zh-CN">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=1080" />
+    <meta name="viewport" content="width=540" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Noto+Serif+SC:wght@500;700&family=Outfit:wght@500;600&display=swap"
+      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Noto+Sans+SC:wght@500;700&family=Noto+Serif+SC:wght@500;700&family=Outfit:wght@500;600;700&display=swap"
       rel="stylesheet"
     />
     <title>__XHS_TITLE_ESC__</title>
     <style>
       __XHS_STYLES__
-      /* Card 3 — 对话: monospace + thread blocks */
+      /* Card 3 — 对话: pastel shell + chat bubbles */
+      html {
+        background: #e8ecff;
+      }
+
       body.xhs-card.card-dialogue {
-        font-family: "IBM Plex Mono", ui-monospace, monospace;
+        --dialogue-purple: #5b21b6;
+        --dialogue-purple-mid: #6d28d9;
+        --dialogue-border: #c4b5fd;
+        --dialogue-surface: rgba(255, 255, 255, 0.8);
+        --dialogue-bubble-a: rgba(255, 255, 255, 0.95);
+        --dialogue-bubble-b: rgba(237, 233, 254, 0.92);
+        --dialogue-watermark: rgba(109, 40, 217, 0.34);
+
+        margin: 0;
+        border-radius: 20px;
+        border: 2px dashed var(--dialogue-border);
+        background: linear-gradient(180deg, #fdf2f8 0%, #f5f3ff 50%, #e0f2fe 100%);
+        color: var(--dialogue-purple-mid);
+        font-family: "IBM Plex Mono", "Noto Sans SC", "PingFang SC", monospace;
+        box-shadow: none;
       }
-      .card-dialogue main {
-        gap: 20px;
+
+      body.xhs-card.card-dialogue main.dialogue-main {
+        position: relative;
+        z-index: 1;
+        width: 100%;
+        min-height: 960px;
+        margin: 0;
+        padding: 46px 34px 88px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        box-sizing: border-box;
+        gap: 12px;
       }
+
       .card-dialogue .thread-cap {
-        font-size: 20px;
-        color: var(--xhs-text-muted);
-        letter-spacing: 0.18em;
+        margin: 0;
+        font-family: Outfit, "Noto Sans SC", "PingFang SC", sans-serif;
+        font-size: 12px;
+        font-weight: 600;
+        color: #7c3aed;
+        letter-spacing: 0.12em;
         text-transform: uppercase;
-        margin: 0 0 8px;
       }
+
+      .card-dialogue .thread-panel {
+        padding: 18px 14px 16px;
+        border-radius: 16px;
+        background: var(--dialogue-surface);
+        border: 1px solid rgba(109, 40, 217, 0.2);
+        box-shadow: 0 14px 34px rgba(124, 58, 237, 0.1);
+      }
+
       .card-dialogue .md-rendered {
         display: flex;
         flex-direction: column;
         gap: 4px;
       }
-      /* Odd paragraphs = first speaker (e.g. Alex); even = reply (e.g. Sarah). */
+
       .card-dialogue .md-rendered p {
         position: relative;
-        margin: 0 0 14px;
-        max-width: 94%;
-        padding: 18px 22px 18px 26px;
-        border-radius: 14px 14px 14px 4px;
-        background: var(--xhs-surface);
-        border: 1px solid var(--xhs-border);
-        font-size: 26px;
-        line-height: 1.45;
-        color: var(--xhs-text);
-        box-shadow: 0 12px 40px var(--xhs-shadow);
+        margin: 0 0 8px;
+        max-width: 95%;
+        padding: 9px 12px;
+        border-radius: 12px 12px 12px 4px;
+        background: var(--dialogue-bubble-a);
+        border: 1px solid rgba(109, 40, 217, 0.2);
+        font-size: 13px;
+        line-height: 1.48;
+        color: var(--dialogue-purple);
+        box-shadow: 0 6px 16px rgba(124, 58, 237, 0.08);
         align-self: flex-start;
       }
+
       .card-dialogue .md-rendered p:nth-child(even) {
         align-self: flex-end;
-        padding: 18px 26px 18px 22px;
-        border-radius: 14px 14px 4px 14px;
-        background: var(--xhs-surface-dim);
-        border-color: var(--xhs-border-accent);
+        padding: 9px 12px;
+        border-radius: 12px 12px 4px 12px;
+        background: var(--dialogue-bubble-b);
+        border-color: rgba(109, 40, 217, 0.28);
       }
+
       .card-dialogue .md-rendered p::before {
         content: "";
         position: absolute;
-        left: 10px;
-        top: 14px;
-        bottom: 14px;
-        width: 3px;
-        border-radius: 2px;
-        background: linear-gradient(
-          180deg,
-          var(--xhs-accent),
-          var(--xhs-accent-2)
-        );
+        left: 8px;
+        top: -4px;
+        width: 22px;
+        height: 2px;
+        border-radius: 999px;
+        background: rgba(99, 102, 241, 0.55);
       }
+
       .card-dialogue .md-rendered p:nth-child(even)::before {
         left: auto;
-        right: 10px;
-        background: linear-gradient(
-          180deg,
-          var(--xhs-kicker),
-          var(--xhs-accent)
-        );
+        right: 8px;
+        background: rgba(139, 92, 246, 0.55);
+      }
+
+      .card-dialogue .dialogue-watermark {
+        position: absolute;
+        right: 28px;
+        bottom: 38px;
+        margin: 0;
+        font-family: Outfit, "Noto Sans SC", "PingFang SC", sans-serif;
+        font-size: 13px;
+        font-weight: 500;
+        letter-spacing: 0.02em;
+        color: var(--dialogue-watermark);
+        text-align: right;
+        max-width: 70%;
+        word-break: break-all;
       }
     </style>
   </head>
   <body class="xhs-card card-dialogue">
-    <main>
+    <main class="dialogue-main">
       <p class="thread-cap">__XHS_TITLE_ESC__ · thread</p>
-      <div class="md-rendered">__XHS_BODY_HTML__</div>
+      <div class="thread-panel">
+        <div class="md-rendered">__XHS_BODY_HTML__</div>
+      </div>
+      <p class="dialogue-watermark">__XHS_ACCOUNT_WATERMARK_ESC__</p>
     </main>
   </body>
 </html>

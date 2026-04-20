@@ -2,69 +2,121 @@
 <html lang="zh-CN">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=1080" />
+    <meta name="viewport" content="width=540" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Noto+Serif+SC:wght@500;700&family=Outfit:wght@400;600&display=swap"
+      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Noto+Sans+SC:wght@500;700&family=Noto+Serif+SC:wght@500;700&family=Outfit:wght@500;600;700&display=swap"
       rel="stylesheet"
     />
     <title>__XHS_TITLE_ESC__</title>
     <style>
       __XHS_STYLES__
-      /* Card 2 — 场景: rail + column (shared palette) */
-      .card-scene main {
-        flex-direction: row;
-        align-items: stretch;
-        gap: 0;
-        padding-left: 56px;
-        padding-right: 56px;
+      /* Card 2 — 场景: pastel shell + single content panel */
+      html {
+        background: #e8ecff;
       }
-      .card-scene .rail {
-        width: 8px;
-        border-radius: 999px;
-        background: linear-gradient(
-          180deg,
-          var(--xhs-accent),
-          var(--xhs-accent-2)
-        );
-        margin-right: 40px;
-        flex-shrink: 0;
+
+      body.xhs-card.card-scene {
+        --scene-purple: #5b21b6;
+        --scene-purple-mid: #6d28d9;
+        --scene-border: #c4b5fd;
+        --scene-surface: rgba(255, 255, 255, 0.78);
+        --scene-watermark: rgba(109, 40, 217, 0.34);
+
+        margin: 0;
+        border-radius: 20px;
+        border: 2px dashed var(--scene-border);
+        background: linear-gradient(180deg, #fdf2f8 0%, #f5f3ff 52%, #e0f2fe 100%);
+        color: var(--scene-purple-mid);
+        font-family: Outfit, "Noto Sans SC", "PingFang SC", system-ui, sans-serif;
+        box-shadow: none;
       }
-      .card-scene .scene-inner {
-        flex: 1;
+
+      body.xhs-card.card-scene main.scene-main {
+        position: relative;
+        z-index: 1;
+        width: 100%;
+        min-height: 960px;
+        margin: 0;
+        padding: 46px 34px 88px;
         display: flex;
         flex-direction: column;
-        gap: 28px;
-        padding-top: 8px;
+        justify-content: center;
+        box-sizing: border-box;
       }
+
+      .card-scene .scene-chip {
+        align-self: flex-start;
+        margin: 0 0 14px;
+        padding: 6px 12px;
+        border-radius: 999px;
+        border: 1px solid rgba(109, 40, 217, 0.24);
+        background: rgba(255, 255, 255, 0.68);
+        font-size: 12px;
+        font-weight: 600;
+        letter-spacing: 0.1em;
+        color: #7c3aed;
+      }
+
+      .card-scene .scene-panel {
+        padding: 22px 20px;
+        border-radius: 16px;
+        background: var(--scene-surface);
+        border: 1px solid rgba(109, 40, 217, 0.2);
+        box-shadow: 0 16px 36px rgba(124, 58, 237, 0.11);
+        display: flex;
+        flex-direction: column;
+      }
+
       .card-scene .scene-h {
-        margin: 0;
-        font-family: Outfit, system-ui, sans-serif;
-        font-size: 22px;
-        letter-spacing: 0.2em;
-        text-transform: uppercase;
-        color: var(--xhs-text-muted);
+        margin: 0 0 12px;
+        font-size: 20px;
+        font-weight: 700;
+        line-height: 1.32;
+        color: var(--scene-purple);
       }
+
+      .card-scene .md-rendered {
+        font-size: 18px;
+        line-height: 1.58;
+        color: var(--scene-purple-mid);
+      }
+
       .card-scene .md-rendered p {
-        font-size: 34px;
-        color: var(--xhs-text);
+        margin: 0 0 0.66em;
       }
+
       .card-scene .md-rendered p:last-child {
-        font-family: Outfit, system-ui, sans-serif;
-        font-size: 30px;
-        color: var(--xhs-accent-soft);
+        margin-bottom: 0;
+        font-size: 16px;
+        color: #4f46e5;
         font-style: italic;
+      }
+
+      .card-scene .scene-watermark {
+        position: absolute;
+        right: 28px;
+        bottom: 38px;
+        margin: 0;
+        font-size: 13px;
+        font-weight: 500;
+        letter-spacing: 0.02em;
+        color: var(--scene-watermark);
+        text-align: right;
+        max-width: 70%;
+        word-break: break-all;
       }
     </style>
   </head>
   <body class="xhs-card card-scene">
-    <main>
-      <div class="rail" aria-hidden="true"></div>
-      <div class="scene-inner">
+    <main class="scene-main">
+      <p class="scene-chip">CARD 02 · 场景</p>
+      <div class="scene-panel">
         <h2 class="scene-h">__XHS_TITLE_ESC__</h2>
-        <div class="md-rendered">__XHS_BODY_HTML__</div>
+        <div class="md-rendered slide-md">__XHS_BODY_HTML__</div>
       </div>
+      <p class="scene-watermark">__XHS_ACCOUNT_WATERMARK_ESC__</p>
     </main>
   </body>
 </html>

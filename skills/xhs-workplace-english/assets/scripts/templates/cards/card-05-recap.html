@@ -2,42 +2,126 @@
 <html lang="zh-CN">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=1080" />
+    <meta name="viewport" content="width=540" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Noto+Serif+SC:wght@500;700&family=Outfit:wght@500;700&display=swap"
+      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Noto+Sans+SC:wght@500;700&family=Noto+Serif+SC:wght@500;700&family=Outfit:wght@500;600;700&display=swap"
       rel="stylesheet"
     />
     <title>__XHS_TITLE_ESC__</title>
     <style>
       __XHS_STYLES__
-      /* Card 5 — 复盘: centered emphasis */
-      .card-recap main {
+      /* Card 5 — 复盘: pastel shell + quote focus */
+      html {
+        background: #e8ecff;
+      }
+
+      body.xhs-card.card-recap {
+        --recap-purple: #5b21b6;
+        --recap-purple-mid: #6d28d9;
+        --recap-border: #c4b5fd;
+        --recap-surface: rgba(255, 255, 255, 0.8);
+        --recap-watermark: rgba(109, 40, 217, 0.34);
+
+        margin: 0;
+        border-radius: 20px;
+        border: 2px dashed var(--recap-border);
+        background: linear-gradient(180deg, #fdf2f8 0%, #f5f3ff 52%, #e0f2fe 100%);
+        color: var(--recap-purple-mid);
+        font-family: Outfit, "Noto Sans SC", "PingFang SC", system-ui, sans-serif;
+        box-shadow: none;
+      }
+
+      body.xhs-card.card-recap main.recap-main {
+        position: relative;
+        z-index: 1;
+        width: 100%;
+        min-height: 960px;
+        margin: 0;
+        padding: 46px 34px 88px;
+        display: flex;
+        flex-direction: column;
         justify-content: center;
+        align-items: center;
+        box-sizing: border-box;
         text-align: center;
       }
+
       .card-recap .recap-label {
-        margin: 0 0 20px;
-        font-size: 22px;
-        letter-spacing: 0.25em;
+        margin: 0 0 14px;
+        font-size: 12px;
+        font-weight: 600;
+        letter-spacing: 0.15em;
         text-transform: uppercase;
-        color: var(--xhs-text-muted);
+        color: #7c3aed;
       }
+
+      .card-recap .recap-panel {
+        margin: 0 auto;
+        width: 100%;
+        max-width: 452px;
+        padding: 26px 22px 24px;
+        border-radius: 18px;
+        background: var(--recap-surface);
+        border: 1px solid rgba(109, 40, 217, 0.2);
+        box-shadow: 0 16px 36px rgba(124, 58, 237, 0.1);
+      }
+
       .card-recap .md-rendered {
-        font-size: 42px;
-        line-height: 1.45;
-        color: var(--xhs-accent-soft);
+        position: relative;
+        font-size: 24px;
+        line-height: 1.5;
+        color: var(--recap-purple);
+        font-weight: 600;
       }
+
       .card-recap .md-rendered p {
         margin: 0;
+      }
+
+      .card-recap .md-rendered::before,
+      .card-recap .md-rendered::after {
+        position: absolute;
+        font-size: 28px;
+        line-height: 1;
+        color: rgba(109, 40, 217, 0.3);
+      }
+
+      .card-recap .md-rendered::before {
+        content: "“";
+        left: -6px;
+        top: -12px;
+      }
+
+      .card-recap .md-rendered::after {
+        content: "”";
+        right: -6px;
+        bottom: -14px;
+      }
+
+      .card-recap .recap-watermark {
+        position: absolute;
+        right: 28px;
+        bottom: 38px;
+        margin: 0;
+        font-size: 13px;
+        font-weight: 500;
+        letter-spacing: 0.02em;
+        color: var(--recap-watermark);
+        text-align: right;
+        max-width: 70%;
+        word-break: break-all;
       }
     </style>
   </head>
   <body class="xhs-card card-recap">
-    <main>
+    <main class="recap-main">
       <p class="recap-label">__XHS_TITLE_ESC__</p>
-      <div class="md-rendered">__XHS_BODY_HTML__</div>
+      <div class="recap-panel">
+        <div class="md-rendered">__XHS_BODY_HTML__</div>
+      </div>
+      <p class="recap-watermark">__XHS_ACCOUNT_WATERMARK_ESC__</p>
     </main>
   </body>
 </html>

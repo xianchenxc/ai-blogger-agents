@@ -50,13 +50,14 @@ export class AgentManager {
     agentId: string,
     input: AgentInvokeInput,
     threadId: string,
+    agentRuntimeContext?: Record<string, unknown>,
   ): Promise<unknown> {
     const agent = this.agents.get(agentId);
     if (!agent) {
       throw new Error(`Unknown agent: ${agentId}`);
     }
     return agent.invoke(input, {
-      configurable: { thread_id: threadId },
+      configurable: { thread_id: threadId, agentRuntimeContext },
     });
   }
 }

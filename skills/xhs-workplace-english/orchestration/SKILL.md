@@ -8,7 +8,7 @@ description: Single entry for Xiaohongshu (小红书) "职场英语" short dialo
 ## Single entry (critical)
 
 - For a **normal full run**, **`read_file` exactly once**: `/skills/xhs-workplace-english/orchestration/SKILL.md` (this file). **Do not** `read_file` `topic/knowledge/dialogue/assets/review/SKILL.md` unless the user explicitly asks to debug that stage.
-- **Reference templates**: only `read_file` the **one** dialogue file under `dialogue/references/` (email OR Slack OR Feishu) plus **`assets/references/post_skeleton.md`** and **`assets/references/slides_skeleton.md`** in Stage D — **three `read_file` max** for these refs per run.
+- **Reference templates**: only `read_file` the **one** dialogue file under `dialogue/references/` (email OR Slack OR Feishu) plus **`assets/references/slides_skeleton.md`** in Stage D — **two `read_file` max** for these refs per run.
 - **Memory**: call `memory_search_recent` **at most twice** per full run — once before topic, optionally once during review if duplicate risk.
 
 ## Goal
@@ -55,17 +55,17 @@ Produce **non-duplicate** workplace-English learning content for **小红书**, 
 ## Stage D — assets
 
 1. Read `dialogue.md`, `topic.md`, `knowledge.md`.
-2. `read_file` `/skills/xhs-workplace-english/assets/references/post_skeleton.md` and `/skills/xhs-workplace-english/assets/references/slides_skeleton.md`.
-3. Write `output/<runId>/post.md` and `slides.md` (**5–8** sections `## Card n — title` in `slides.md`, body under each header).
-4. Call tool **`xhs_assets_render`** with `{ "runId": "<runId>" }` (optional `"viewport": "1080x1920"`). This writes `html/*.html`, `screenshots/*.png`, and `render_report.json` using fixed HTML/CSS templates (no LLM review of pixels).
-5. If `render_report.json` reports `"status": "error"`, fix `post.md`/`slides.md` or environment (e.g. run `npx playwright install chromium`), then call **`xhs_assets_render`** again.
-6. Update `state.json`: `stage: "assets"`, `assets_summary` lists `post.md`, `slides.md`, `html/`, `screenshots/`, `render_report.json`.
+2. `read_file` `/skills/xhs-workplace-english/assets/references/slides_skeleton.md`.
+3. Write `output/<runId>/slides.md` (**5–8** sections `## Card n — title`; body under each header).
+4. Call tool **`xhs_assets_render`** with `{ "runId": "<runId>" }` (optional `"viewport": "540x720"`, `"deviceScaleFactor": 2`). This writes `html/*.html`, `screenshots/*.png`, and `render_report.json` using fixed HTML/CSS templates (no LLM review of pixels). `post.html` / `post.png` are generated from **Card 1**; `slide-01` is skipped to avoid duplicate outputs.
+5. If `render_report.json` reports `"status": "error"`, fix `slides.md` or environment (e.g. run `npx playwright install chromium`), then call **`xhs_assets_render`** again.
+6. Update `state.json`: `stage: "assets"`, `assets_summary` lists `slides.md`, `html/`, `screenshots/`, `render_report.json`.
 
 ---
 
 ## Stage E — review (text only)
 
-1. Read `post.md`, `slides.md`; skim `dialogue.md`, `topic.md`. **Do not** review PNG/HTML layout as creative output — templates are fixed; `render_report.json` is technical only (read it **only** if assets step failed and you need the error summary).
+1. Read `slides.md`; skim `dialogue.md`, `topic.md`. **Do not** review PNG/HTML layout as creative output — templates are fixed; `render_report.json` is technical only (read it **only** if assets step failed and you need the error summary).
 2. Checklist: 职场英语贴合; English 正确; 小红书短平快; 风险（医疗/投资/歧视/侵权等）; 与 memory 不实质重复.
 3. Write/append `output/<runId>/review.json` as one JSON object:
 

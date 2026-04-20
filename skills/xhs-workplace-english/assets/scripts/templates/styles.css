@@ -1,4 +1,4 @@
-/* Fixed layout for Xiaohongshu-style vertical cards (1080x1920 viewport). */
+/* 540px CSS canvas × 2 deviceScaleFactor → 1080px-wide PNGs; default Playwright viewport 540×720. */
 *,
 *::before,
 *::after {
@@ -9,12 +9,12 @@ html,
 body {
   margin: 0;
   padding: 0;
-  width: 1080px;
-  min-height: 1920px;
+  width: 540px;
+  min-height: 960px;
   font-family: system-ui, -apple-system, "Segoe UI", Roboto, "PingFang SC",
     "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
-  background: linear-gradient(165deg, #0f172a 0%, #1e293b 45%, #0f172a 100%);
-  color: #f8fafc;
+  background: linear-gradient(180deg, #fdf2f8 0%, #f5f3ff 50%, #e0f2fe 100%);
+  color: #5b21b6;
 }
 
 /**
@@ -22,26 +22,26 @@ body {
  * Per-card HTML only adjusts layout; colors reference these variables.
  */
 body.xhs-card {
-  --xhs-bg-0: #0c1018;
-  --xhs-bg-1: #121a28;
-  --xhs-bg-2: #0e141c;
-  --xhs-spot-cool: rgba(56, 189, 248, 0.075);
-  --xhs-spot-warm: rgba(201, 166, 107, 0.065);
-  --xhs-accent: #38bdf8;
-  --xhs-accent-2: #818cf8;
-  --xhs-accent-soft: #7dd3fc;
-  --xhs-kicker: #c9a66b;
-  --xhs-text: #e2e8f0;
-  --xhs-text-bright: #f1f5f9;
-  --xhs-text-muted: #94a3b8;
-  --xhs-surface: rgba(30, 41, 59, 0.88);
-  --xhs-surface-dim: rgba(15, 23, 42, 0.72);
-  --xhs-border: rgba(100, 116, 139, 0.45);
-  --xhs-border-accent: rgba(56, 189, 248, 0.38);
-  --xhs-link: #7dd3fc;
-  --xhs-code-bg: rgba(15, 23, 42, 0.65);
-  --xhs-code-fg: #bae6fd;
-  --xhs-shadow: rgba(0, 0, 0, 0.38);
+  --xhs-bg-0: #fdf2f8;
+  --xhs-bg-1: #f5f3ff;
+  --xhs-bg-2: #e0f2fe;
+  --xhs-spot-cool: rgba(99, 102, 241, 0.12);
+  --xhs-spot-warm: rgba(244, 114, 182, 0.1);
+  --xhs-accent: #7c3aed;
+  --xhs-accent-2: #6366f1;
+  --xhs-accent-soft: #8b5cf6;
+  --xhs-kicker: #a855f7;
+  --xhs-text: #6d28d9;
+  --xhs-text-bright: #4c1d95;
+  --xhs-text-muted: #7c3aed;
+  --xhs-surface: rgba(255, 255, 255, 0.9);
+  --xhs-surface-dim: rgba(245, 243, 255, 0.88);
+  --xhs-border: rgba(139, 92, 246, 0.32);
+  --xhs-border-accent: rgba(124, 58, 237, 0.34);
+  --xhs-link: #5b21b6;
+  --xhs-code-bg: rgba(237, 233, 254, 0.9);
+  --xhs-code-fg: #4c1d95;
+  --xhs-shadow: rgba(124, 58, 237, 0.14);
 
   background: radial-gradient(
       100% 72% at 10% 0%,
@@ -83,57 +83,57 @@ body.xhs-card .md-rendered hr {
 
 main {
   width: 100%;
-  min-height: 1920px;
-  padding: 72px 64px 96px;
+  min-height: 960px;
+  padding: 36px 32px 48px;
   display: flex;
   flex-direction: column;
-  gap: 28px;
+  gap: 14px;
 }
 
 .card-label {
   align-self: flex-start;
-  font-size: 28px;
+  font-size: 14px;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: #38bdf8;
+  color: #7c3aed;
   font-weight: 600;
 }
 
 .xhs-card-heading {
   margin: 0;
-  font-size: 52px;
+  font-size: 26px;
   line-height: 1.2;
   font-weight: 700;
-  color: #f1f5f9;
+  color: #4c1d95;
 }
 
 /* Rendered Markdown (marked output) */
 .md-rendered {
-  font-size: 32px;
+  font-size: 16px;
   line-height: 1.55;
-  color: #e2e8f0;
+  color: #6d28d9;
   white-space: normal;
   word-break: break-word;
 }
 
 .slide-md.md-rendered {
-  font-size: 34px;
+  font-size: 17px;
 }
 
 .md-rendered h1 {
   margin: 0 0 0.5em;
-  font-size: 48px;
+  font-size: 24px;
   line-height: 1.2;
   font-weight: 700;
-  color: #f1f5f9;
+  color: #4c1d95;
 }
 
 .md-rendered h2,
 .md-rendered h3 {
   margin: 0.85em 0 0.45em;
-  font-size: 38px;
+  font-size: 19px;
   font-weight: 600;
-  color: #cbd5e1;
+  color: #5b21b6;
 }
 
 .md-rendered p {
@@ -151,28 +151,28 @@ main {
 }
 
 .md-rendered strong {
-  color: #f8fafc;
+  color: #4c1d95;
   font-weight: 600;
 }
 
 .md-rendered a {
-  color: #7dd3fc;
+  color: #5b21b6;
 }
 
 .md-rendered code {
   font-size: 0.9em;
   padding: 0.1em 0.25em;
-  border-radius: 4px;
-  background: rgba(15, 23, 42, 0.65);
-  color: #bae6fd;
+  border-radius: 2px;
+  background: rgba(237, 233, 254, 0.9);
+  color: #4c1d95;
 }
 
 .md-rendered hr {
   border: 0;
-  border-top: 1px solid rgba(148, 163, 184, 0.35);
+  border-top: 1px solid rgba(139, 92, 246, 0.26);
   margin: 1em 0;
 }
 
 .post-md.md-rendered {
-  font-size: 30px;
+  font-size: 15px;
 }

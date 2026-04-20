@@ -7,7 +7,7 @@ description: Legacy reference only — review rules are inlined in orchestration
 
 ## Input
 
-Read `output/<runId>/post.md`, `slides.md`, and skim `dialogue.md`, `topic.md`. Optionally re-check `memory_search_recent` if duplicate risk.
+Read `output/<runId>/slides.md`, and skim `dialogue.md`, `topic.md`. Optionally re-check `memory_search_recent` if duplicate risk.
 
 ## Checklist
 
@@ -44,6 +44,6 @@ Call `memory_record_generation` with:
 - `fingerprint`: normalized title + `|` + sorted primary keywords (ASCII lowercased)
 - `title`: Chinese title from topic
 - `tags`: e.g. `["xhs","workplace-english","<template>"]`
-- `paths`: relative paths written, e.g. `["output/<runId>/post.md", ...]`
+- `paths`: relative paths written, e.g. `["output/<runId>/slides.md", ...]`
 
 Then set `state.json` `stage` to `"done"`.

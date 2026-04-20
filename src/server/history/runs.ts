@@ -47,6 +47,17 @@ export type RunListItem = {
   memory?: Pick<GenerationRecord, "title" | "tags" | "fingerprint" | "createdAt">;
 };
 
+function stripPreviewFields(
+  state: Record<string, unknown> | null,
+): Record<string, unknown> | null {
+  if (!state) return null;
+  const next: Record<string, unknown> = { ...state };
+  delete next.preview;
+  delete next.previews;
+  delete next.review;
+  return next;
+}
+
 function memoryMatchForRun(
   records: GenerationRecord[],
   runId: string,
@@ -86,7 +97,7 @@ export async function listRuns(options: {
     items.push({
       runId,
       updatedAt: stateStat.mtime.toISOString(),
-      state,
+      state: stripPreviewFields(state),
       memory: mem
         ? {
             title: mem.title,
@@ -127,7 +138,7 @@ export async function getRun(runId: string): Promise<RunListItem | null> {
   return {
     runId: (state?.runId as string | undefined) ?? runId,
     updatedAt: stateStat.mtime.toISOString(),
-    state,
+    state: stripPreviewFields(state),
     memory: mem
       ? {
           title: mem.title,

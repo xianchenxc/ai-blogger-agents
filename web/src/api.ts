@@ -36,6 +36,10 @@ export type RunFileEntry = {
   size?: number;
 };
 
+export type UserSettings = {
+  xhsAccountName: string;
+};
+
 export async function postInvocation(body: {
   input?: string;
   messages?: { role: "user" | "assistant" | "system"; content: string }[];
@@ -141,4 +145,22 @@ export async function fetchAssetBlob(
   });
   if (!r.ok) throw new Error(await r.text());
   return r.blob();
+}
+
+export async function getUserSettings(): Promise<UserSettings> {
+  const r = await fetch(`${API}/user-settings`, {
+    headers: { ...authHeaders() },
+  });
+  if (!r.ok) throw new Error(await r.text());
+  return r.json() as Promise<UserSettings>;
+}
+
+export async function putUserSettings(input: UserSettings): Promise<UserSettings> {
+  const r = await fetch(`${API}/user-settings`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json", ...authHeaders() },
+    body: JSON.stringify(input),
+  });
+  if (!r.ok) throw new Error(await r.text());
+  return r.json() as Promise<UserSettings>;
 }

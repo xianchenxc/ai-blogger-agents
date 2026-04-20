@@ -2,56 +2,134 @@
 <html lang="zh-CN">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=1080" />
+    <meta name="viewport" content="width=540" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Noto+Serif+SC:wght@500;700&family=Outfit:wght@500;600&display=swap"
+      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Noto+Sans+SC:wght@500;700&family=Noto+Serif+SC:wght@500;700&family=Outfit:wght@500;600;700&display=swap"
       rel="stylesheet"
     />
     <title>__XHS_TITLE_ESC__</title>
     <style>
       __XHS_STYLES__
-      /* Card 4 — 知识点: list as stacked surfaces */
-      .card-tips main {
-        gap: 24px;
+      /* Card 4 — 知识点: pastel shell + numbered cards */
+      html {
+        background: #e8ecff;
       }
-      .card-tips .tips-h {
+
+      body.xhs-card.card-tips {
+        --tips-purple: #5b21b6;
+        --tips-purple-mid: #6d28d9;
+        --tips-border: #c4b5fd;
+        --tips-surface: rgba(255, 255, 255, 0.82);
+        --tips-watermark: rgba(109, 40, 217, 0.34);
+
         margin: 0;
-        font-family: Outfit, system-ui, sans-serif;
-        font-size: 24px;
-        color: var(--xhs-kicker);
+        border-radius: 20px;
+        border: 2px dashed var(--tips-border);
+        background: linear-gradient(180deg, #fdf2f8 0%, #f5f3ff 50%, #e0f2fe 100%);
+        color: var(--tips-purple-mid);
+        font-family: Outfit, "Noto Sans SC", "PingFang SC", system-ui, sans-serif;
+        box-shadow: none;
+      }
+
+      body.xhs-card.card-tips main.tips-main {
+        position: relative;
+        z-index: 1;
+        width: 100%;
+        min-height: 960px;
+        margin: 0;
+        padding: 46px 34px 88px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        box-sizing: border-box;
+      }
+
+      .card-tips .tips-h {
+        margin: 0 0 14px;
+        font-size: 12px;
+        font-weight: 600;
+        color: #7c3aed;
         letter-spacing: 0.14em;
         text-transform: uppercase;
       }
+
+      .card-tips .tips-panel {
+        padding: 20px 16px 16px;
+        border-radius: 16px;
+        background: var(--tips-surface);
+        border: 1px solid rgba(109, 40, 217, 0.2);
+        box-shadow: 0 14px 34px rgba(124, 58, 237, 0.11);
+      }
+
       .card-tips .md-rendered ul {
         list-style: none;
         margin: 0;
         padding: 0;
         display: flex;
         flex-direction: column;
-        gap: 18px;
+        gap: 10px;
+        counter-reset: tips-item;
       }
+
       .card-tips .md-rendered li {
+        counter-increment: tips-item;
+        position: relative;
         margin: 0;
-        padding: 22px 26px;
-        border-radius: 16px;
-        background: var(--xhs-surface-dim);
-        border: 1px solid var(--xhs-border-accent);
-        font-size: 32px;
-        line-height: 1.45;
-        color: var(--xhs-text);
-        box-shadow: 0 8px 32px var(--xhs-shadow);
+        padding: 12px 12px 12px 44px;
+        border-radius: 12px;
+        background: rgba(255, 255, 255, 0.88);
+        border: 1px solid rgba(109, 40, 217, 0.18);
+        font-size: 16px;
+        line-height: 1.46;
+        color: var(--tips-purple-mid);
+        box-shadow: 0 6px 14px rgba(124, 58, 237, 0.07);
       }
+
+      .card-tips .md-rendered li::before {
+        content: counter(tips-item);
+        position: absolute;
+        left: 12px;
+        top: 12px;
+        width: 22px;
+        height: 22px;
+        border-radius: 999px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 12px;
+        font-weight: 700;
+        color: #ffffff;
+        background: linear-gradient(180deg, #7c3aed, #6366f1);
+      }
+
       .card-tips .md-rendered li strong {
-        color: var(--xhs-text-bright);
+        color: var(--tips-purple);
+      }
+
+      .card-tips .tips-watermark {
+        position: absolute;
+        right: 28px;
+        bottom: 38px;
+        margin: 0;
+        font-size: 13px;
+        font-weight: 500;
+        letter-spacing: 0.02em;
+        color: var(--tips-watermark);
+        text-align: right;
+        max-width: 70%;
+        word-break: break-all;
       }
     </style>
   </head>
   <body class="xhs-card card-tips">
-    <main>
+    <main class="tips-main">
       <h2 class="tips-h">__XHS_TITLE_ESC__</h2>
-      <div class="md-rendered">__XHS_BODY_HTML__</div>
+      <div class="tips-panel">
+        <div class="md-rendered">__XHS_BODY_HTML__</div>
+      </div>
+      <p class="tips-watermark">__XHS_ACCOUNT_WATERMARK_ESC__</p>
     </main>
   </body>
 </html>

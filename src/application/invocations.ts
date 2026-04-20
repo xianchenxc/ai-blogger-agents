@@ -64,6 +64,8 @@ export type EnqueueInvocationOptions = {
   threadId: string;
   /** Defaults to {@link DEFAULT_AGENT_ID}. */
   agentId?: string;
+  /** Per-invocation context passed into runnable configurable.agentRuntimeContext. */
+  agentRuntimeContext?: Record<string, unknown>;
 };
 
 /**
@@ -109,7 +111,12 @@ export function enqueueInvocation(
     j.status = "running";
     j.startedAt = new Date().toISOString();
     try {
-      const result = await agentManager.runAgent(agentId, input, threadId);
+      const result = await agentManager.runAgent(
+        agentId,
+        input,
+        threadId,
+        options.agentRuntimeContext,
+      );
       j.status = "completed";
       j.finishedAt = new Date().toISOString();
       j.runIdGuess = guessRunIdFromResult(result);
