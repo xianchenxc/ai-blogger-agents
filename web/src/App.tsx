@@ -7,7 +7,10 @@ export default function App() {
   return (
     <div className="layout">
       <header className="header">
-        <strong className="brand">XHS 职场英语</strong>
+        <div className="header-left">
+          <strong className="brand">XHS 职场英语</strong>
+          <span className="brand-tag">Agent · Runs</span>
+        </div>
         <nav className="nav">
           <NavLink to="/" end>
             新建

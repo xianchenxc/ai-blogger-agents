@@ -1,7 +1,11 @@
-import { randomUUID } from "node:crypto";
 import PQueue from "p-queue";
-import { xhsAgent, type XhsInvokeInput } from "../../xhs/xhsAgent.js";
-import { invocationConcurrency } from "../config.js";
+import type { AgentInvokeInput } from "./agentManager.js";
+import { agentManager } from "./agentManager.js";
+import { DEFAULT_AGENT_ID } from "./registerDefaultAgents.js";
+import { invocationConcurrency } from "../runtime/context.js";
+
+/** Separates agent id from thread key inside invocation ids (must not appear in agent ids). */
+const INVOCATION_ID_SEP = "|";
 
 export type InvocationStatus =
   | "pending"
@@ -11,6 +15,7 @@ export type InvocationStatus =
 
 export type InvocationJob = {
   id: string;
+  agentId: string;
   status: InvocationStatus;
   createdAt: string;
   startedAt?: string;
@@ -50,16 +55,49 @@ function summarizeResult(data: unknown): string | undefined {
   }
 }
 
+export function makeInvocationId(agentId: string, threadId: string): string {
+  return `${agentId}${INVOCATION_ID_SEP}${threadId.trim()}`;
+}
+
+export type EnqueueInvocationOptions = {
+  /** LangGraph / agent thread; must be non-empty (HTTP API generates one if omitted). */
+  threadId: string;
+  /** Defaults to {@link DEFAULT_AGENT_ID}. */
+  agentId?: string;
+};
+
 /**
- * Enqueues xhsAgent.invoke. Returns invocation id immediately.
+ * Enqueues `agentManager.runAgent`. Invocation `id` is `agentId|threadId`.
+ * @throws if agent is unknown, `threadId` is empty, or a job with the same id is already pending/running.
  */
 export function enqueueInvocation(
-  input: XhsInvokeInput,
-  threadId?: string,
+  input: AgentInvokeInput,
+  options: EnqueueInvocationOptions,
 ): string {
-  const id = randomUUID();
+  const agentId = options.agentId?.trim() || DEFAULT_AGENT_ID;
+  if (!agentManager.has(agentId)) {
+    throw new Error(`Unknown agent: ${agentId}`);
+  }
+
+  const threadId = options.threadId.trim();
+  if (!threadId) {
+    throw new Error("threadId is required and must be non-empty");
+  }
+  const id = makeInvocationId(agentId, threadId);
+
+  const existing = jobs.get(id);
+  if (existing?.status === "pending" || existing?.status === "running") {
+    throw new Error(
+      `Invocation already in progress for agent ${agentId} and this thread`,
+    );
+  }
+  if (existing) {
+    jobs.delete(id);
+  }
+
   const job: InvocationJob = {
     id,
+    agentId,
     status: "pending",
     createdAt: new Date().toISOString(),
   };
@@ -71,9 +109,7 @@ export function enqueueInvocation(
     j.status = "running";
     j.startedAt = new Date().toISOString();
     try {
-      const result = await xhsAgent.invoke(input, {
-        configurable: threadId ? { thread_id: threadId } : {},
-      });
+      const result = await agentManager.runAgent(agentId, input, threadId);
       j.status = "completed";
       j.finishedAt = new Date().toISOString();
       j.runIdGuess = guessRunIdFromResult(result);

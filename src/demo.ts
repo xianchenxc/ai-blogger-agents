@@ -2,7 +2,7 @@
  * Demo: set DEEPSEEK_API_KEY (and optionally XHS_MODEL) then run `npm run demo`.
  */
 import "dotenv/config";
-import { xhsAgent } from "./xhs/xhsAgent.js";
+import { xhsAgent } from "./agents/index.js";
 
 async function main() {
   if (!process.env.DEEPSEEK_API_KEY) {

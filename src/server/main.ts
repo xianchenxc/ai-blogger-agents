@@ -3,7 +3,10 @@ import fs from "node:fs";
 import path from "node:path";
 import cors from "cors";
 import express from "express";
-import { PACKAGE_ROOT } from "../paths.js";
+import { registerDefaultAgents } from "../application/registerDefaultAgents.js";
+import { getRuntimeContext } from "../runtime/context.js";
+
+registerDefaultAgents();
 import { apiPort, corsOrigins } from "./config.js";
 import { correlationMiddleware } from "./middleware/correlation.js";
 import { authMiddleware } from "./middleware/auth.js";
@@ -40,7 +43,7 @@ app.use(
 app.use(authMiddleware);
 app.use("/api/v1", createV1Router());
 
-const webDist = path.join(PACKAGE_ROOT, "web", "dist");
+const webDist = path.join(getRuntimeContext().packageRoot, "web", "dist");
 if (fs.existsSync(webDist)) {
   app.use(express.static(webDist));
 }

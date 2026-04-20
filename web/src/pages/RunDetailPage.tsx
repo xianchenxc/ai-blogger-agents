@@ -146,24 +146,26 @@ export default function RunDetailPage() {
 
   return (
     <div className="page">
-      <div className="row spread">
-        <h1>Run 详情</h1>
-        <div className="row">
-          <Link className="btn" to="/runs">
-            返回列表
-          </Link>
-          <button type="button" className="btn danger" onClick={() => void remove()}>
-            删除
-          </button>
+      <header className="page-head">
+        <div className="row spread">
+          <h1>Run 详情</h1>
+          <div className="row">
+            <Link className="btn" to="/runs">
+              返回列表
+            </Link>
+            <button type="button" className="btn danger" onClick={() => void remove()}>
+              删除
+            </button>
+          </div>
         </div>
-      </div>
-      <p className="meta">
-        <code>{runId}</code>
-      </p>
+        <p className="meta page-lead">
+          <code>{runId}</code>
+        </p>
+      </header>
       {error ? <p className="error">{error}</p> : null}
 
       <section className="card mt">
-        <h2>截图预览</h2>
+        <h2 className="section-title">截图预览</h2>
         <div className="gallery">
           {pngs.map((name) => (
             <AuthPng key={name} runId={runId} name={name} />
@@ -173,7 +175,7 @@ export default function RunDetailPage() {
       </section>
 
       <section className="card mt">
-        <h2>文本文件</h2>
+        <h2 className="section-title">文本文件</h2>
         <div className="tabs">
           <button
             type="button"
@@ -215,7 +217,7 @@ export default function RunDetailPage() {
       </section>
 
       <section className="card mt">
-        <h2>目录清单</h2>
+        <h2 className="section-title">目录清单</h2>
         <ul className="filelist">
           {files.map((f) => (
             <li key={f.name}>

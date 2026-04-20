@@ -8,6 +8,7 @@ export function authHeaders(): HeadersInit {
 
 export type InvocationJob = {
   id: string;
+  agentId: string;
   status: "pending" | "running" | "completed" | "failed";
   createdAt: string;
   startedAt?: string;
@@ -39,14 +40,15 @@ export async function postInvocation(body: {
   input?: string;
   messages?: { role: "user" | "assistant" | "system"; content: string }[];
   thread_id?: string;
-}): Promise<{ id: string }> {
+  agent_id?: string;
+}): Promise<{ id: string; thread_id: string }> {
   const r = await fetch(`${API}/invocations`, {
     method: "POST",
     headers: { "Content-Type": "application/json", ...authHeaders() },
     body: JSON.stringify(body),
   });
   if (!r.ok) throw new Error(await r.text());
-  return r.json() as Promise<{ id: string }>;
+  return r.json() as Promise<{ id: string; thread_id: string }>;
 }
 
 export async function getInvocation(id: string): Promise<InvocationJob> {

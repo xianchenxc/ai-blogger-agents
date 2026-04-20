@@ -50,11 +50,13 @@ export default function CreatePage() {
 
   return (
     <div className="page">
-      <h1>新建生成</h1>
-      <p className="muted">
-        提交后将异步执行 Agent。完成后请到「历史」查看最新{" "}
-        <code>run-*</code>；若接口返回 <code>runIdGuess</code> 可辅助定位。
-      </p>
+      <header className="page-head">
+        <h1>新建生成</h1>
+        <p className="muted page-lead">
+          提交后将异步执行 Agent。完成后请到「历史」查看最新{" "}
+          <code>run-*</code>；若接口返回 <code>runIdGuess</code> 可辅助定位。
+        </p>
+      </header>
       <label className="label">需求描述</label>
       <textarea
         className="textarea"
@@ -79,7 +81,7 @@ export default function CreatePage() {
       ) : null}
       {error ? <p className="error">{error}</p> : null}
       <section className="card mt">
-        <h2>鉴权（可选）</h2>
+        <h2 className="section-title">鉴权（可选）</h2>
         <p className="muted small">
           若服务端设置了 <code>ADMIN_API_TOKEN</code>，在此保存 Bearer
           token（仅存浏览器 localStorage）。
@@ -87,7 +89,7 @@ export default function CreatePage() {
         <TokenSetter />
       </section>
       <section className="card mt">
-        <h2>可在线编辑的文件</h2>
+        <h2 className="section-title">可在线编辑的文件</h2>
         <p className="muted small">
           历史详情中可编辑：{EDITABLE_FILES.join("、")}
         </p>

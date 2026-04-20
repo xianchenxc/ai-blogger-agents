@@ -2,10 +2,10 @@ import { spawnSync } from "node:child_process";
 import path from "node:path";
 import { tool } from "langchain";
 import { z } from "zod";
-import { PACKAGE_ROOT } from "../paths.js";
+import { getRuntimeContext } from "../../../runtime/context.js";
 
 const RENDER_SCRIPT = path.join(
-  PACKAGE_ROOT,
+  getRuntimeContext().packageRoot,
   "skills",
   "xhs-workplace-english",
   "assets",
@@ -18,15 +18,25 @@ const RENDER_SCRIPT = path.join(
  */
 export function createAssetsRenderTool(backendRoot: string) {
   return tool(
-    async ({ runId, viewport }) => {
-      const vp = viewport ?? "1080x1920";
+    async ({ runId, viewport, xhsAccount, deviceScaleFactor }) => {
+      const vp = viewport ?? "540x720";
       const args = [
         RENDER_SCRIPT,
         `--runId=${runId}`,
         `--backendRoot=${backendRoot}`,
-        `--packageRoot=${PACKAGE_ROOT}`,
+        `--packageRoot=${getRuntimeContext().packageRoot}`,
         `--viewport=${vp}`,
       ];
+      if (
+        deviceScaleFactor !== undefined &&
+        Number.isFinite(deviceScaleFactor)
+      ) {
+        args.push(`--deviceScaleFactor=${deviceScaleFactor}`);
+      }
+      const acct = xhsAccount?.trim();
+      if (acct) {
+        args.push(`--xhsAccount=${acct}`);
+      }
       const r = spawnSync(process.execPath, args, {
         encoding: "utf8",
         maxBuffer: 20 * 1024 * 1024,
@@ -61,7 +71,21 @@ export function createAssetsRenderTool(backendRoot: string) {
           .string()
           .regex(/^\d+x\d+$/)
           .optional()
-          .describe('Viewport WxH, default "1080x1920"'),
+          .describe('Viewport WxH, default "540x720"'),
+        deviceScaleFactor: z
+          .number()
+          .positive()
+          .optional()
+          .describe(
+            "Playwright deviceScaleFactor for PNG output (2 = 2× pixels). Omit for renderer default (2).",
+          ),
+        xhsAccount: z
+          .string()
+          .min(1)
+          .optional()
+          .describe(
+            'Xiaohongshu account watermark on cover slide (e.g. "@MyHandle"). Omit to use the renderer default.',
+          ),
       }),
     },
   );

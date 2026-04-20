@@ -1,7 +1,10 @@
+import { randomUUID } from "node:crypto";
 import { Router, type Request, type Response } from "express";
 import { z } from "zod";
+import { agentManager } from "../../application/agentManager.js";
+import { DEFAULT_AGENT_ID } from "../../application/registerDefaultAgents.js";
+import { enqueueInvocation, getInvocation } from "../../application/invocations.js";
 import { createLogger } from "../logger.js";
-import { enqueueInvocation, getInvocation } from "../jobs/invocations.js";
 import {
   deleteRun,
   getRun,
@@ -14,7 +17,7 @@ import {
   isEditableMarkdownBasename,
   isAssetBasename,
 } from "../history/runs.js";
-import type { XhsMessage } from "../../xhs/xhsAgent.js";
+import type { XhsMessage } from "../../agents/index.js";
 
 function p(v: string | string[] | undefined): string {
   if (v == null) return "";
@@ -33,6 +36,7 @@ const PostInvocationBodySchema = z
       )
       .optional(),
     thread_id: z.string().min(1).optional(),
+    agent_id: z.string().min(1).optional(),
   })
   .refine((b) => Boolean(b.input?.trim()) || Boolean(b.messages?.length), {
     message: "Provide non-empty `input` or `messages`",
@@ -52,7 +56,15 @@ export function createV1Router(): Router {
       res.status(400).json({ error: parsed.error.flatten() });
       return;
     }
-    const { input, messages, thread_id } = parsed.data;
+    const { input, messages, thread_id, agent_id } = parsed.data;
+    const threadId = thread_id?.trim() || randomUUID();
+    const agentId = agent_id?.trim() || DEFAULT_AGENT_ID;
+    if (!agentManager.has(agentId)) {
+      res.status(400).json({
+        error: `Unknown agent_id: ${agentId}`,
+      });
+      return;
+    }
     let invokeInput: string | { messages: XhsMessage[] };
     if (messages?.length) {
       invokeInput = { messages: messages as XhsMessage[] };
@@ -62,9 +74,27 @@ export function createV1Router(): Router {
       res.status(400).json({ error: "Missing input" });
       return;
     }
-    const id = enqueueInvocation(invokeInput, thread_id);
-    log.info("invocation_enqueued", { id });
-    res.status(202).json({ id });
+    let id: string;
+    try {
+      id = enqueueInvocation(invokeInput, {
+        threadId,
+        agentId,
+      });
+    } catch (e) {
+      const msg = e instanceof Error ? e.message : String(e);
+      if (msg.includes("already in progress")) {
+        res.status(409).json({ error: msg });
+        return;
+      }
+      if (msg.startsWith("Unknown agent:")) {
+        res.status(400).json({ error: msg });
+        return;
+      }
+      res.status(500).json({ error: msg });
+      return;
+    }
+    log.info("invocation_enqueued", { id, agentId, threadId });
+    res.status(202).json({ id, thread_id: threadId });
   });
 
   r.get("/invocations/:id", (req: Request, res: Response) => {

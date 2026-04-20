@@ -1,14 +1,7 @@
-import path from "node:path";
-import { PACKAGE_ROOT } from "../paths.js";
+import { getRuntimeContext } from "../runtime/context.js";
 
 export function backendRoot(): string {
-  return process.env.XHS_BACKEND_ROOT?.trim() || PACKAGE_ROOT;
-}
-
-export function memoryPathDefault(): string {
-  const raw = process.env.XHS_MEMORY_PATH?.trim();
-  if (raw) return raw;
-  return path.join(PACKAGE_ROOT, "data", "memory", "generations.jsonl");
+  return getRuntimeContext().backendRoot;
 }
 
 export function apiPort(): number {
@@ -29,9 +22,4 @@ export function corsOrigins(): string[] {
   return raw.split(",").map((s) => s.trim()).filter(Boolean);
 }
 
-export function invocationConcurrency(): number {
-  const raw = process.env.XHS_INVOCATION_CONCURRENCY;
-  const n = raw ? Number.parseInt(raw, 10) : 1;
-  if (!Number.isFinite(n)) return 1;
-  return Math.min(8, Math.max(1, n));
-}
+export { invocationConcurrency } from "../runtime/context.js";

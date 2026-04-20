@@ -1,12 +1,8 @@
 import fs from "node:fs/promises";
 import path from "node:path";
-import {
-  readGenerationRecords,
-  recordReferencesRunId,
-  removeRecordsReferencingRunId,
-  type GenerationRecord,
-} from "../../memory/generationsJsonl.js";
-import { backendRoot, memoryPathDefault } from "../config.js";
+import { recordReferencesRunId, type GenerationRecord } from "../../memory/generationsJsonl.js";
+import { getGenerationMemoryPort } from "../../memory/generationMemoryPort.js";
+import { backendRoot } from "../config.js";
 
 const EDITABLE_MD = new Set([
   "topic.md",
@@ -69,7 +65,7 @@ export async function listRuns(options: {
   } catch {
     return { runs: [], total: 0 };
   }
-  const memory = readGenerationRecords(memoryPathDefault());
+  const memory = getGenerationMemoryPort().readAll();
   const items: RunListItem[] = [];
   for (const name of names) {
     const runDir = path.join(root, name);
@@ -126,7 +122,7 @@ export async function getRun(runId: string): Promise<RunListItem | null> {
   } catch {
     state = null;
   }
-  const memory = readGenerationRecords(memoryPathDefault());
+  const memory = getGenerationMemoryPort().readAll();
   const mem = memoryMatchForRun(memory, runId);
   return {
     runId: (state?.runId as string | undefined) ?? runId,
@@ -234,6 +230,6 @@ export async function deleteRun(runId: string): Promise<boolean> {
   } catch {
     return false;
   }
-  removeRecordsReferencingRunId(memoryPathDefault(), runId);
+  getGenerationMemoryPort().removeRecordsReferencingRunId(runId);
   return true;
 }

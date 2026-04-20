@@ -1,37 +1,18 @@
-import fs from "node:fs";
 import { tool } from "langchain";
 import { z } from "zod";
-import {
-  ensureDirForFile,
-  parseJsonl,
-  type GenerationRecord,
-} from "../memory/generationsJsonl.js";
+import type {
+  GenerationMemoryPort,
+  GenerationRecord,
+} from "../../../memory/generationMemoryPort.js";
 
-export type { GenerationRecord } from "../memory/generationsJsonl.js";
+export type { GenerationRecord } from "../../../memory/generationMemoryPort.js";
 
-export function createMemoryTools(memoryPath: string) {
+export function createMemoryTools(memory: GenerationMemoryPort) {
   const memory_search_recent = tool(
     async ({ limit, query }) => {
       const lim = limit ?? 30;
-      if (!fs.existsSync(memoryPath)) {
-        return JSON.stringify({ entries: [] as GenerationRecord[] });
-      }
-      const raw = fs.readFileSync(memoryPath, "utf8");
-      let entries = parseJsonl(raw).sort((a, b) =>
-        a.createdAt < b.createdAt ? 1 : -1,
-      );
-      if (query?.trim()) {
-        const q = query.trim().toLowerCase();
-        entries = entries.filter(
-          (e) =>
-            e.title.toLowerCase().includes(q) ||
-            e.fingerprint.toLowerCase().includes(q) ||
-            (e.tags ?? []).some((t) => t.toLowerCase().includes(q)),
-        );
-      }
-      return JSON.stringify({
-        entries: entries.slice(0, Math.min(Math.max(lim, 1), 200)),
-      });
+      const entries = memory.searchRecent({ limit: lim, query });
+      return JSON.stringify({ entries });
     },
     {
       name: "memory_search_recent",
@@ -46,7 +27,6 @@ export function createMemoryTools(memoryPath: string) {
 
   const memory_record_generation = tool(
     async ({ fingerprint, title, tags, paths }) => {
-      ensureDirForFile(memoryPath);
       const rec: GenerationRecord = {
         fingerprint,
         title,
@@ -54,7 +34,7 @@ export function createMemoryTools(memoryPath: string) {
         paths: paths ?? [],
         createdAt: new Date().toISOString(),
       };
-      fs.appendFileSync(memoryPath, `${JSON.stringify(rec)}\n`, "utf8");
+      memory.append(rec);
       return JSON.stringify({ ok: true, recorded: rec });
     },
     {
